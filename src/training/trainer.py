@@ -56,6 +56,13 @@ class UnifiedTrainer:
         self.is_transferguard = is_transferguard
         self.output_dir = output_dir
 
+        # High-performance GPU settings (Tensor Core AMP & cuDNN benchmarking)
+        if self.device.type == "cuda":
+            torch.backends.cudnn.benchmark = True
+        self.use_amp = (self.device.type == "cuda")
+        device_type = "cuda" if self.device.type == "cuda" else "cpu"
+        self.scaler = torch.amp.GradScaler(device_type, enabled=self.use_amp)
+
         os.makedirs(output_dir, exist_ok=True)
         self.logger = MetricLogger()
         self.checkpoint = ModelCheckpoint(
@@ -122,27 +129,30 @@ class UnifiedTrainer:
 
         pbar = tqdm(dataloader, desc=f"Epoch {epoch:02d} [Train]", leave=False)
         for images, targets in pbar:
-            images = images.to(self.device)
-            targets = targets.to(self.device)
+            images = images.to(self.device, non_blocking=True)
+            targets = targets.to(self.device, non_blocking=True)
 
-            self.optimizer.zero_grad()
+            self.optimizer.zero_grad(set_to_none=True)
 
-            if self.is_transferguard and isinstance(self.model, AdaptiveRoutingModel):
-                logits, gate_scores = self.model(images)
-                loss_dict = self.criterion(
-                    logits=logits,
-                    targets=targets,
-                    gate_scores=gate_scores,
-                    controller=self.model.controller,
-                )
-                self.model.record_batch_scores(gate_scores)
-            else:
-                logits = self.model(images)
-                loss_dict = self.criterion(logits=logits, targets=targets)
+            with torch.amp.autocast("cuda", enabled=self.use_amp):
+                if self.is_transferguard and isinstance(self.model, AdaptiveRoutingModel):
+                    logits, gate_scores = self.model(images)
+                    loss_dict = self.criterion(
+                        logits=logits,
+                        targets=targets,
+                        gate_scores=gate_scores,
+                        controller=self.model.controller,
+                    )
+                    self.model.record_batch_scores(gate_scores)
+                else:
+                    logits = self.model(images)
+                    loss_dict = self.criterion(logits=logits, targets=targets)
 
-            loss = loss_dict["total_loss"]
-            loss.backward()
-            self.optimizer.step()
+                loss = loss_dict["total_loss"]
+
+            self.scaler.scale(loss).backward()
+            self.scaler.step(self.optimizer)
+            self.scaler.update()
 
             acc1 = accuracy(logits, targets, topk=(1,))[0]
             total_loss += loss.item()
@@ -167,15 +177,16 @@ class UnifiedTrainer:
 
         with torch.no_grad():
             for images, targets in dataloader:
-                images = images.to(self.device)
-                targets = targets.to(self.device)
+                images = images.to(self.device, non_blocking=True)
+                targets = targets.to(self.device, non_blocking=True)
 
-                if self.is_transferguard and isinstance(self.model, AdaptiveRoutingModel):
-                    logits, _ = self.model(images)
-                else:
-                    logits = self.model(images)
+                with torch.amp.autocast("cuda", enabled=self.use_amp):
+                    if self.is_transferguard and isinstance(self.model, AdaptiveRoutingModel):
+                        logits, _ = self.model(images)
+                    else:
+                        logits = self.model(images)
 
-                loss_dict = self.criterion(logits=logits, targets=targets)
+                    loss_dict = self.criterion(logits=logits, targets=targets)
                 acc1, acc5 = accuracy(
                     logits, targets, topk=(1, min(5, logits.shape[1]))
                 )

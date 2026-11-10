@@ -86,12 +86,17 @@ def get_dataset_loaders(
         train_set = Subset(train_set, list(range(train_size)))
         val_set = Subset(val_set, list(range(val_size)))
 
+    cuda_available = torch.cuda.is_available()
+    use_workers = num_workers > 0
+
     train_loader = DataLoader(
         train_set,
         batch_size=batch_size,
         shuffle=True,
         num_workers=num_workers,
-        pin_memory=torch.cuda.is_available(),
+        pin_memory=cuda_available,
+        persistent_workers=use_workers,
+        prefetch_factor=2 if use_workers else None,
         drop_last=False,
     )
 
@@ -100,7 +105,9 @@ def get_dataset_loaders(
         batch_size=batch_size,
         shuffle=False,
         num_workers=num_workers,
-        pin_memory=torch.cuda.is_available(),
+        pin_memory=cuda_available,
+        persistent_workers=use_workers,
+        prefetch_factor=2 if use_workers else None,
         drop_last=False,
     )
 

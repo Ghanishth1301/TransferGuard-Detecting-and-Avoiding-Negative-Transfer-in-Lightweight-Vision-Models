@@ -14,8 +14,8 @@ model:
 data:
   dataset: "svhn"
   data_dir: "./data"
-  batch_size: 64
-  num_workers: 2
+  batch_size: 128
+  num_workers: 4
   image_size: 224
   debug_subset: null
 
@@ -25,7 +25,7 @@ training:
   weight_decay: 0.0001
   optimizer: "adamw"
   scheduler: "cosine"
-  mixed_precision: false
+  mixed_precision: true
 
 transferguard:
   enabled: true
