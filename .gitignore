@@ -13,7 +13,7 @@ env/
 wheels/
 
 # Datasets & large model weight files
-data/
+/data/
 *.pth
 *.pt
 checkpoints/
