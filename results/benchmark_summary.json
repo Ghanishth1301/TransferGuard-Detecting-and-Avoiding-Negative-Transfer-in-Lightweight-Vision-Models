@@ -5,6 +5,7 @@
     "Accuracy (%)":88.62,
     "Transfer Gain (%)":0.0,
     "Negative Transfer?":"Baseline (N\/A)",
+    "Data Source":"Canonical Reference",
     "Diagnosis":"Baseline reference performance without source domain knowledge."
   },
   {
@@ -13,6 +14,7 @@
     "Accuracy (%)":84.18,
     "Transfer Gain (%)":-4.44,
     "Negative Transfer?":"\u26a0\ufe0f YES (Negative Transfer)",
+    "Data Source":"Canonical Reference",
     "Diagnosis":"Moderate negative transfer detected (TG = -4.44%). Significant representation conflict."
   },
   {
@@ -21,6 +23,7 @@
     "Accuracy (%)":72.35,
     "Transfer Gain (%)":-16.27,
     "Negative Transfer?":"\u26a0\ufe0f YES (Negative Transfer)",
+    "Data Source":"Canonical Reference",
     "Diagnosis":"Severe negative transfer detected (TG = -16.27%). Catastrophic domain mismatch."
   },
   {
@@ -29,6 +32,7 @@
     "Accuracy (%)":90.45,
     "Transfer Gain (%)":1.83,
     "Negative Transfer?":"\u2705 NO (Positive Transfer)",
+    "Data Source":"Canonical Reference",
     "Diagnosis":"Transfer learning provided a positive gain of +1.83% over random initialization."
   },
   {
@@ -37,6 +41,7 @@
     "Accuracy (%)":67.4,
     "Transfer Gain (%)":0.0,
     "Negative Transfer?":"Baseline (N\/A)",
+    "Data Source":"Canonical Reference",
     "Diagnosis":"Baseline reference performance without source domain knowledge."
   },
   {
@@ -45,6 +50,7 @@
     "Accuracy (%)":73.85,
     "Transfer Gain (%)":6.45,
     "Negative Transfer?":"\u2705 NO (Positive Transfer)",
+    "Data Source":"Canonical Reference",
     "Diagnosis":"Transfer learning provided a positive gain of +6.45% over random initialization."
   },
   {
@@ -53,6 +59,7 @@
     "Accuracy (%)":64.1,
     "Transfer Gain (%)":-3.3,
     "Negative Transfer?":"\u26a0\ufe0f YES (Negative Transfer)",
+    "Data Source":"Canonical Reference",
     "Diagnosis":"Moderate negative transfer detected (TG = -3.30%). Significant representation conflict."
   },
   {
@@ -61,6 +68,7 @@
     "Accuracy (%)":75.2,
     "Transfer Gain (%)":7.8,
     "Negative Transfer?":"\u2705 NO (Positive Transfer)",
+    "Data Source":"Canonical Reference",
     "Diagnosis":"Transfer learning provided a positive gain of +7.80% over random initialization."
   },
   {
@@ -69,6 +77,7 @@
     "Accuracy (%)":51.8,
     "Transfer Gain (%)":0.0,
     "Negative Transfer?":"Baseline (N\/A)",
+    "Data Source":"Canonical Reference",
     "Diagnosis":"Baseline reference performance without source domain knowledge."
   },
   {
@@ -77,6 +86,7 @@
     "Accuracy (%)":86.4,
     "Transfer Gain (%)":34.6,
     "Negative Transfer?":"\u2705 NO (Positive Transfer)",
+    "Data Source":"Canonical Reference",
     "Diagnosis":"Transfer learning provided a positive gain of +34.60% over random initialization."
   },
   {
@@ -85,6 +95,7 @@
     "Accuracy (%)":81.2,
     "Transfer Gain (%)":29.4,
     "Negative Transfer?":"\u2705 NO (Positive Transfer)",
+    "Data Source":"Canonical Reference",
     "Diagnosis":"Transfer learning provided a positive gain of +29.40% over random initialization."
   },
   {
@@ -93,6 +104,7 @@
     "Accuracy (%)":87.1,
     "Transfer Gain (%)":35.3,
     "Negative Transfer?":"\u2705 NO (Positive Transfer)",
+    "Data Source":"Canonical Reference",
     "Diagnosis":"Transfer learning provided a positive gain of +35.30% over random initialization."
   }
 ]
