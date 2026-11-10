@@ -28,6 +28,7 @@ def parse_args():
     parser.add_argument("--lr", type=float, default=None)
     parser.add_argument("--subset", type=int, default=None, help="Debug subset")
     parser.add_argument("--device", type=str, default=None)
+    parser.add_argument("--resume", nargs="?", const="auto", default=None, help="Resume training (auto or path to checkpoint)")
     return parser.parse_args()
 
 
@@ -94,6 +95,7 @@ def main():
         device=cfg.experiment.device,
         output_dir=output_dir,
         is_transferguard=False,
+        resume=args.resume,
     )
 
     results = trainer.fit(

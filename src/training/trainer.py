@@ -30,7 +30,7 @@ def accuracy(output: torch.Tensor, target: torch.Tensor, topk=(1,)) -> list[floa
 class UnifiedTrainer:
     """
     Unified Trainer handling scratch training, standard fine-tuning,
-    linear probing, and TransferGuard adaptive routing.
+    linear probing, and TransferGuard adaptive routing with resumable training.
     """
 
     def __init__(
@@ -42,6 +42,7 @@ class UnifiedTrainer:
         device: str = "auto",
         output_dir: str = "results",
         is_transferguard: bool = False,
+        resume: Union[bool, str] = False,
     ):
         if device == "auto":
             self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -60,6 +61,58 @@ class UnifiedTrainer:
         self.checkpoint = ModelCheckpoint(
             checkpoint_dir=os.path.join(output_dir, "checkpoints")
         )
+
+        self.start_epoch = 0
+        self.best_acc1 = 0.0
+
+        if resume:
+            self._handle_resume(resume)
+
+    def _handle_resume(self, resume_arg: Union[bool, str]):
+        """Restores state from checkpoint if available."""
+        if isinstance(resume_arg, str) and resume_arg != "auto":
+            ckpt_path = resume_arg
+        else:
+            ckpt_path = self.checkpoint.latest_checkpoint_path
+
+        if os.path.exists(ckpt_path):
+            try:
+                loaded_epoch, best_metric, history, extra_state = self.checkpoint.load(
+                    checkpoint_path=ckpt_path,
+                    model=self.model,
+                    optimizer=self.optimizer,
+                    scheduler=self.scheduler,
+                    device=self.device,
+                )
+                self.start_epoch = loaded_epoch
+                self.best_acc1 = best_metric
+                self.logger.set_history(history)
+
+                # Restore TransferGuard dynamic routing state
+                if self.is_transferguard and isinstance(self.model, AdaptiveRoutingModel):
+                    if "running_scores" in extra_state:
+                        self.model.running_scores = extra_state["running_scores"]
+                    if "history_scores" in extra_state:
+                        self.model.history_scores = extra_state["history_scores"]
+                    if "routing_actions" in extra_state:
+                        stages_to_freeze = [
+                            k for k, act in extra_state["routing_actions"].items() if act == "freeze"
+                        ]
+                        self.model.backbone.freeze_stages(stages_to_freeze)
+
+                print("\n" + "=" * 65)
+                print(f"🔄 RESUMED TRAINING CHECKPOINT:")
+                print(f"   Source File:       {ckpt_path}")
+                print(f"   Completed Epochs:  {self.start_epoch}")
+                print(f"   Best Prior Acc:    {self.best_acc1:.2f}%")
+                print("=" * 65)
+            except Exception as e:
+                print(f"⚠️ Warning: Failed to resume checkpoint from {ckpt_path}: {e}")
+                print("   Proceeding with initial weights.")
+        else:
+            if resume_arg != "auto" and isinstance(resume_arg, str):
+                raise FileNotFoundError(f"Specified resume checkpoint does not exist: {ckpt_path}")
+            print(f"ℹ️ No prior checkpoint found at {ckpt_path}. Starting clean run from Epoch 1.")
 
     def train_epoch(self, dataloader: DataLoader, epoch: int) -> Dict[str, float]:
         self.model.train()
@@ -143,21 +196,39 @@ class UnifiedTrainer:
         val_loader: DataLoader,
         epochs: int = 30,
     ) -> Dict[str, Any]:
-        """Runs complete training workflow across all epochs."""
-        start_time = time.time()
-        best_acc1 = 0.0
+        """Runs or resumes training workflow across all epochs."""
+        history_path = os.path.join(self.output_dir, "train_history.json")
 
-        print(f"\n🚀 Commencing Training for {epochs} epochs on device: {self.device}")
+        if self.start_epoch >= epochs:
+            print(f"\n✅ Training already completed for {epochs} epochs (current: {self.start_epoch}).")
+            val_metrics = self.evaluate(val_loader)
+            print(f"   Validation Top-1 Accuracy: {val_metrics['val_acc1']:.2f}%")
+            return {
+                "best_val_acc1": self.best_acc1 or val_metrics["val_acc1"],
+                "total_time": 0.0,
+                "history_file": history_path,
+            }
+
+        start_time = time.time()
+        start_ep = self.start_epoch + 1
+
+        print(f"\n🚀 Commencing Training (Epochs {start_ep} -> {epochs}) on device: {self.device}")
         print("=" * 65)
 
-        for epoch in range(1, epochs + 1):
+        for epoch in range(start_ep, epochs + 1):
             train_metrics = self.train_epoch(train_loader, epoch)
             val_metrics = self.evaluate(val_loader)
 
             # TransferGuard dynamic routing update
             routing_actions = {}
+            extra_state = {}
             if self.is_transferguard and isinstance(self.model, AdaptiveRoutingModel):
                 routing_actions = self.model.update_dynamic_routing()
+                extra_state = {
+                    "running_scores": dict(self.model.running_scores),
+                    "history_scores": list(self.model.history_scores),
+                    "routing_actions": routing_actions,
+                }
 
             combined_metrics = {**train_metrics, **val_metrics}
             self.logger.log_epoch(epoch, combined_metrics)
@@ -166,12 +237,18 @@ class UnifiedTrainer:
                 current_metric=val_metrics["val_acc1"],
                 model=self.model,
                 optimizer=self.optimizer,
+                scheduler=self.scheduler,
                 epoch=epoch,
-                extra_state={"routing_actions": routing_actions},
+                history=self.logger.history,
+                extra_state=extra_state,
             )
 
-            if val_metrics["val_acc1"] > best_acc1:
-                best_acc1 = val_metrics["val_acc1"]
+            if val_metrics["val_acc1"] > self.best_acc1:
+                self.best_acc1 = val_metrics["val_acc1"]
+
+            # Save metrics history immediately after every epoch so progress is never lost
+            self.logger.save_history(history_path)
+            self.start_epoch = epoch
 
             # Formatted epoch printout
             status = f"Epoch {epoch:02d}/{epochs:02d} | Train Loss: {train_metrics['train_loss']:.4f} | Train Acc: {train_metrics['train_acc1']:.2f}% | Val Acc: {val_metrics['val_acc1']:.2f}%"
@@ -185,15 +262,10 @@ class UnifiedTrainer:
 
         total_time = time.time() - start_time
         print("=" * 65)
-        print(f"✨ Training complete in {total_time / 60:.2f} mins. Best Val Acc: {best_acc1:.2f}%")
-
-        # Save training history JSON
-        history_path = os.path.join(self.output_dir, "train_history.json")
-        self.logger.save_history(history_path)
+        print(f"✨ Training session complete in {total_time / 60:.2f} mins. Best Val Acc: {self.best_acc1:.2f}%")
 
         return {
-            "best_val_acc1": best_acc1,
+            "best_val_acc1": self.best_acc1,
             "total_time": total_time,
             "history_file": history_path,
         }
-
