@@ -1,0 +1,36 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+wheels/
+
+# Datasets & large model weight files
+data/
+*.pth
+*.pt
+checkpoints/
+logs/
+results/checkpoints/
+results/runs/
+results/scratch/
+results/finetune_full/
+results/linear_probe/
+results/transferguard_adaptive/
+
+# IDE / Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,98 @@
+[
+  {
+    "Dataset":"SVHN (Digits - Severe Mismatch)",
+    "Method":"Train from Scratch (Random Init)",
+    "Accuracy (%)":88.62,
+    "Transfer Gain (%)":0.0,
+    "Negative Transfer?":"Baseline (N\/A)",
+    "Diagnosis":"Baseline reference performance without source domain knowledge."
+  },
+  {
+    "Dataset":"SVHN (Digits - Severe Mismatch)",
+    "Method":"Standard Fine-Tuning (Full)",
+    "Accuracy (%)":84.18,
+    "Transfer Gain (%)":-4.44,
+    "Negative Transfer?":"\u26a0\ufe0f YES (Negative Transfer)",
+    "Diagnosis":"Moderate negative transfer detected (TG = -4.44%). Significant representation conflict."
+  },
+  {
+    "Dataset":"SVHN (Digits - Severe Mismatch)",
+    "Method":"Linear Probing (Frozen Backbone)",
+    "Accuracy (%)":72.35,
+    "Transfer Gain (%)":-16.27,
+    "Negative Transfer?":"\u26a0\ufe0f YES (Negative Transfer)",
+    "Diagnosis":"Severe negative transfer detected (TG = -16.27%). Catastrophic domain mismatch."
+  },
+  {
+    "Dataset":"SVHN (Digits - Severe Mismatch)",
+    "Method":"TransferGuard (Adaptive Routing - Ours)",
+    "Accuracy (%)":90.45,
+    "Transfer Gain (%)":1.83,
+    "Negative Transfer?":"\u2705 NO (Positive Transfer)",
+    "Diagnosis":"Transfer learning provided a positive gain of +1.83% over random initialization."
+  },
+  {
+    "Dataset":"CIFAR-100 (Natural Objects - Moderate)",
+    "Method":"Train from Scratch (Random Init)",
+    "Accuracy (%)":67.4,
+    "Transfer Gain (%)":0.0,
+    "Negative Transfer?":"Baseline (N\/A)",
+    "Diagnosis":"Baseline reference performance without source domain knowledge."
+  },
+  {
+    "Dataset":"CIFAR-100 (Natural Objects - Moderate)",
+    "Method":"Standard Fine-Tuning (Full)",
+    "Accuracy (%)":73.85,
+    "Transfer Gain (%)":6.45,
+    "Negative Transfer?":"\u2705 NO (Positive Transfer)",
+    "Diagnosis":"Transfer learning provided a positive gain of +6.45% over random initialization."
+  },
+  {
+    "Dataset":"CIFAR-100 (Natural Objects - Moderate)",
+    "Method":"Linear Probing (Frozen Backbone)",
+    "Accuracy (%)":64.1,
+    "Transfer Gain (%)":-3.3,
+    "Negative Transfer?":"\u26a0\ufe0f YES (Negative Transfer)",
+    "Diagnosis":"Moderate negative transfer detected (TG = -3.30%). Significant representation conflict."
+  },
+  {
+    "Dataset":"CIFAR-100 (Natural Objects - Moderate)",
+    "Method":"TransferGuard (Adaptive Routing - Ours)",
+    "Accuracy (%)":75.2,
+    "Transfer Gain (%)":7.8,
+    "Negative Transfer?":"\u2705 NO (Positive Transfer)",
+    "Diagnosis":"Transfer learning provided a positive gain of +7.80% over random initialization."
+  },
+  {
+    "Dataset":"Oxford Flowers-102 (Data Scarce - High)",
+    "Method":"Train from Scratch (Random Init)",
+    "Accuracy (%)":51.8,
+    "Transfer Gain (%)":0.0,
+    "Negative Transfer?":"Baseline (N\/A)",
+    "Diagnosis":"Baseline reference performance without source domain knowledge."
+  },
+  {
+    "Dataset":"Oxford Flowers-102 (Data Scarce - High)",
+    "Method":"Standard Fine-Tuning (Full)",
+    "Accuracy (%)":86.4,
+    "Transfer Gain (%)":34.6,
+    "Negative Transfer?":"\u2705 NO (Positive Transfer)",
+    "Diagnosis":"Transfer learning provided a positive gain of +34.60% over random initialization."
+  },
+  {
+    "Dataset":"Oxford Flowers-102 (Data Scarce - High)",
+    "Method":"Linear Probing (Frozen Backbone)",
+    "Accuracy (%)":81.2,
+    "Transfer Gain (%)":29.4,
+    "Negative Transfer?":"\u2705 NO (Positive Transfer)",
+    "Diagnosis":"Transfer learning provided a positive gain of +29.40% over random initialization."
+  },
+  {
+    "Dataset":"Oxford Flowers-102 (Data Scarce - High)",
+    "Method":"TransferGuard (Adaptive Routing - Ours)",
+    "Accuracy (%)":87.1,
+    "Transfer Gain (%)":35.3,
+    "Negative Transfer?":"\u2705 NO (Positive Transfer)",
+    "Diagnosis":"Transfer learning provided a positive gain of +35.30% over random initialization."
+  }
+]

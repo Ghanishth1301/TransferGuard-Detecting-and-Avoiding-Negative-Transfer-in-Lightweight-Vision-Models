@@ -1,0 +1,36 @@
+# Default Experiment Configuration for TransferGuard
+experiment:
+  name: "transferguard_default"
+  seed: 42
+  device: "auto"  # "cpu", "cuda", or "auto"
+  output_dir: "results"
+
+model:
+  backbone: "mobilenet_v3_small"  # "mobilenet_v3_small", "mobilenet_v3_large", "shufflenet_v2_x1_0"
+  pretrained: true
+  num_classes: 10
+  feature_dim: 576  # MobileNetV3-Small classifier input dim
+
+data:
+  dataset: "svhn"  # "svhn", "cifar100", "flowers102"
+  data_dir: "./data"
+  batch_size: 64
+  num_workers: 2
+  image_size: 224
+  debug_subset: null  # Set to integer (e.g. 500) for fast CPU dry-runs
+
+training:
+  epochs: 30
+  lr: 0.001
+  weight_decay: 0.0001
+  momentum: 0.9
+  optimizer: "adamw"  # "sgd" or "adamw"
+  scheduler: "cosine"  # "cosine" or "step"
+  mixed_precision: false  # Auto-enabled on CUDA if supported
+
+transferguard:
+  enabled: true
+  freeze_threshold: 0.65  # Threshold below which layers are bypassed/unfrozen
+  bypass_threshold: 0.35  # Threshold below which residual bypass is engaged
+  regularization_lambda: 0.01
+

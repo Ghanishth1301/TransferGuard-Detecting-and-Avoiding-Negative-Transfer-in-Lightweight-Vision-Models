@@ -1,0 +1,35 @@
+# Oxford Flowers-102 with MobileNetV3-Small (Data-Scarce High Positive Transfer Regime)
+experiment:
+  name: "flowers102_mobilenetv3"
+  seed: 42
+  device: "auto"
+  output_dir: "results/flowers102_mobilenetv3"
+
+model:
+  backbone: "mobilenet_v3_small"
+  pretrained: true
+  num_classes: 102
+  feature_dim: 576
+
+data:
+  dataset: "flowers102"
+  data_dir: "./data"
+  batch_size: 32
+  num_workers: 2
+  image_size: 224
+  debug_subset: null
+
+training:
+  epochs: 40
+  lr: 0.0003
+  weight_decay: 0.0005
+  optimizer: "adamw"
+  scheduler: "cosine"
+  mixed_precision: false
+
+transferguard:
+  enabled: true
+  freeze_threshold: 0.50
+  bypass_threshold: 0.20
+  regularization_lambda: 0.005
+
