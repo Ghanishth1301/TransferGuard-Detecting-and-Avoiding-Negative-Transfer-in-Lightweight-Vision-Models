@@ -1,5 +1,6 @@
 import os
 import json
+import shutil
 import torch
 from typing import Any, Dict, List, Optional, Tuple, Union
 
@@ -123,3 +124,81 @@ class ModelCheckpoint:
         extra_state = ckpt.get("extra_state", {})
 
         return epoch, best_metric, history, extra_state
+
+
+class DriveBackupManager:
+    """
+    Manages automatic synchronization between local experiment output directory
+    and persistent Google Drive storage. Ensures progress is preserved even if
+    the ephemeral Colab container is terminated.
+    """
+
+    def __init__(self, backup_dir: Optional[str] = None, output_dir: Optional[str] = None):
+        self.base_backup_dir = self._resolve_backup_dir(backup_dir)
+        self.experiment_backup_dir = None
+        
+        if self.base_backup_dir:
+            if output_dir:
+                norm_out = os.path.normpath(output_dir)
+                if "results" + os.sep in norm_out:
+                    rel_sub = norm_out.split("results" + os.sep, 1)[1]
+                elif norm_out.startswith("results"):
+                    rel_sub = norm_out[len("results"):].lstrip(os.sep)
+                else:
+                    rel_sub = norm_out.lstrip(os.sep).replace(".." + os.sep, "")
+                self.experiment_backup_dir = os.path.join(self.base_backup_dir, rel_sub)
+            else:
+                self.experiment_backup_dir = self.base_backup_dir
+
+            try:
+                os.makedirs(self.experiment_backup_dir, exist_ok=True)
+                print(f"☁️ Google Drive Persistent Backup Enabled: {self.experiment_backup_dir}")
+            except Exception as e:
+                print(f"⚠️ Could not initialize Google Drive backup directory: {e}")
+                self.experiment_backup_dir = None
+
+    def _resolve_backup_dir(self, backup_dir: Optional[str]) -> Optional[str]:
+        if not backup_dir:
+            return None
+        if backup_dir == "auto":
+            # Auto-detect standard Google Colab Drive mount
+            colab_drive_root = "/content/drive/MyDrive"
+            if os.path.exists(colab_drive_root):
+                return os.path.join(colab_drive_root, "TransferGuard_Backups")
+            return None
+        return backup_dir
+
+    def restore_if_available(self, target_local_dir: str) -> bool:
+        """Restores checkpoints from Drive to local directory if local is empty."""
+        if not self.experiment_backup_dir or not os.path.exists(self.experiment_backup_dir):
+            return False
+
+        restored_any = False
+        try:
+            for sub_path in ["train_history.json", "checkpoints/latest_model.pth", "checkpoints/best_model.pth"]:
+                src = os.path.join(self.experiment_backup_dir, sub_path)
+                dst = os.path.join(target_local_dir, sub_path)
+                if os.path.exists(src) and not os.path.exists(dst):
+                    os.makedirs(os.path.dirname(dst), exist_ok=True)
+                    shutil.copy2(src, dst)
+                    restored_any = True
+            if restored_any:
+                print(f"📥 Successfully restored previous checkpoints from Google Drive into: {target_local_dir}")
+        except Exception as e:
+            print(f"⚠️ Notice: Failed restoring from Drive: {e}")
+        return restored_any
+
+    def sync(self, source_local_dir: str):
+        """Copies newly saved checkpoints and metrics from local workspace into Google Drive."""
+        if not self.experiment_backup_dir or not os.path.exists(self.experiment_backup_dir):
+            return
+
+        try:
+            for sub_path in ["train_history.json", "checkpoints/latest_model.pth", "checkpoints/best_model.pth"]:
+                src = os.path.join(source_local_dir, sub_path)
+                if os.path.exists(src):
+                    dst = os.path.join(self.experiment_backup_dir, sub_path)
+                    os.makedirs(os.path.dirname(dst), exist_ok=True)
+                    shutil.copy2(src, dst)
+        except Exception as e:
+            print(f"⚠️ Notice: Google Drive sync skipped: {e}")

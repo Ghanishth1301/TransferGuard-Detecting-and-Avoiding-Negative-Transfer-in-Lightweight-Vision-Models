@@ -35,6 +35,7 @@ def parse_args():
     parser.add_argument("--subset", type=int, default=None)
     parser.add_argument("--device", type=str, default=None)
     parser.add_argument("--resume", nargs="?", const="auto", default=None, help="Resume training (auto or path to checkpoint)")
+    parser.add_argument("--drive-backup", nargs="?", const="auto", default=None, help="Auto-sync checkpoints to Google Drive")
     return parser.parse_args()
 
 
@@ -118,6 +119,7 @@ def main():
         output_dir=output_dir,
         is_transferguard=True,
         resume=args.resume,
+        drive_backup=args.drive_backup,
     )
 
     results = trainer.fit(

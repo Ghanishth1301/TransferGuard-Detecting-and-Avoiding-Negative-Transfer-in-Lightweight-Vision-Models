@@ -6,7 +6,7 @@ from typing import Any, Dict, Optional, Tuple, Union
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from .loss import TransferGuardLoss
-from .callbacks import MetricLogger, ModelCheckpoint
+from .callbacks import MetricLogger, ModelCheckpoint, DriveBackupManager
 from ..models.adaptive_routing import AdaptiveRoutingModel
 
 
@@ -43,6 +43,7 @@ class UnifiedTrainer:
         output_dir: str = "results",
         is_transferguard: bool = False,
         resume: Union[bool, str] = False,
+        drive_backup: Optional[str] = None,
     ):
         if device == "auto":
             self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -68,6 +69,7 @@ class UnifiedTrainer:
         self.checkpoint = ModelCheckpoint(
             checkpoint_dir=os.path.join(output_dir, "checkpoints")
         )
+        self.drive_manager = DriveBackupManager(drive_backup, output_dir=output_dir)
 
         self.start_epoch = 0
         self.best_acc1 = 0.0
@@ -77,6 +79,9 @@ class UnifiedTrainer:
 
     def _handle_resume(self, resume_arg: Union[bool, str]):
         """Restores state from checkpoint if available."""
+        # Check if Google Drive has a backup to restore if local is empty
+        self.drive_manager.restore_if_available(self.output_dir)
+
         if isinstance(resume_arg, str) and resume_arg != "auto":
             ckpt_path = resume_arg
         else:
@@ -260,6 +265,9 @@ class UnifiedTrainer:
             # Save metrics history immediately after every epoch so progress is never lost
             self.logger.save_history(history_path)
             self.start_epoch = epoch
+
+            # Sync checkpoints to persistent Google Drive if enabled
+            self.drive_manager.sync(self.output_dir)
 
             # Formatted epoch printout
             status = f"Epoch {epoch:02d}/{epochs:02d} | Train Loss: {train_metrics['train_loss']:.4f} | Train Acc: {train_metrics['train_acc1']:.2f}% | Val Acc: {val_metrics['val_acc1']:.2f}%"

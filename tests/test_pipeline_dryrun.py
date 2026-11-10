@@ -115,3 +115,69 @@ def test_resumable_training(tmp_path):
     # Verify already-completed check
     results_already = trainer_2.fit(train_loader=train_loader, val_loader=val_loader, epochs=2)
     assert results_already["total_time"] == 0.0
+
+
+def test_drive_backup_sync_and_restore(tmp_path):
+    """Verifies that Google Drive backup persists checkpoints and restores after container wipe."""
+    mock_drive = str(tmp_path / "google_drive_mock" / "TransferGuard_Backups")
+    local_out = str(tmp_path / "results" / "svhn_mobilenetv3" / "scratch")
+
+    train_loader, val_loader, num_classes = get_dataset_loaders(
+        dataset_name="synthetic",
+        batch_size=8,
+        debug_subset=16,
+        image_size=64,
+    )
+
+    # Session 1: Train 1 epoch with drive_backup enabled
+    model_1 = build_mobilenet_v3(variant="mobilenet_v3_small", pretrained=False, num_classes=num_classes)
+    opt_1 = optim.AdamW(model_1.parameters(), lr=1e-3)
+
+    trainer_1 = UnifiedTrainer(
+        model=model_1,
+        optimizer=opt_1,
+        device="cpu",
+        output_dir=local_out,
+        is_transferguard=False,
+        drive_backup=mock_drive,
+    )
+    trainer_1.fit(train_loader=train_loader, val_loader=val_loader, epochs=1)
+
+    # Verify files synced to mock Google Drive
+    drive_exp_dir = os.path.join(mock_drive, "svhn_mobilenetv3", "scratch")
+    assert os.path.exists(os.path.join(drive_exp_dir, "train_history.json"))
+    assert os.path.exists(os.path.join(drive_exp_dir, "checkpoints", "latest_model.pth"))
+
+    # Simulate catastrophic Colab disconnection/container teardown: wipe local results completely
+    import shutil
+    shutil.rmtree(local_out)
+    assert not os.path.exists(local_out)
+
+    # Session 2: Fresh container starts with empty local directory, connects Drive and resumes
+    model_2 = build_mobilenet_v3(variant="mobilenet_v3_small", pretrained=False, num_classes=num_classes)
+    opt_2 = optim.AdamW(model_2.parameters(), lr=1e-3)
+
+    trainer_2 = UnifiedTrainer(
+        model=model_2,
+        optimizer=opt_2,
+        device="cpu",
+        output_dir=local_out,
+        is_transferguard=False,
+        resume="auto",
+        drive_backup=mock_drive,
+    )
+
+    # Verify that checkpoints were restored from Drive and epoch resumed from 1
+    assert os.path.exists(os.path.join(local_out, "checkpoints", "latest_model.pth"))
+    assert trainer_2.start_epoch == 1
+
+    # Train epoch 2
+    trainer_2.fit(train_loader=train_loader, val_loader=val_loader, epochs=2)
+
+    # Verify that mock drive now has the updated epoch 2 history
+    with open(os.path.join(drive_exp_dir, "train_history.json"), "r") as f:
+        history = json.load(f)
+    assert len(history) == 2
+    assert history[0]["epoch"] == 1
+    assert history[1]["epoch"] == 2
+
