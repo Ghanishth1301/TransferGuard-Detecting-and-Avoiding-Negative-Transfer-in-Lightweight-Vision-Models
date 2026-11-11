@@ -38,38 +38,38 @@
   {
     "Dataset":"CIFAR-100 (Natural Objects - Moderate)",
     "Method":"Train from Scratch (Random Init)",
-    "Accuracy (%)":67.4,
+    "Accuracy (%)":63.17,
     "Transfer Gain (%)":0.0,
     "Negative Transfer?":"Baseline (N\/A)",
-    "Data Source":"Canonical Reference",
+    "Data Source":"Live GPU",
     "Diagnosis":"Baseline reference performance without source domain knowledge."
   },
   {
     "Dataset":"CIFAR-100 (Natural Objects - Moderate)",
     "Method":"Standard Fine-Tuning (Full)",
-    "Accuracy (%)":73.85,
-    "Transfer Gain (%)":6.45,
+    "Accuracy (%)":81.86,
+    "Transfer Gain (%)":18.69,
     "Negative Transfer?":"\u2705 NO (Positive Transfer)",
-    "Data Source":"Canonical Reference",
-    "Diagnosis":"Transfer learning provided a positive gain of +6.45% over random initialization."
+    "Data Source":"Live GPU",
+    "Diagnosis":"Transfer learning provided a positive gain of +18.69% over random initialization."
   },
   {
     "Dataset":"CIFAR-100 (Natural Objects - Moderate)",
     "Method":"Linear Probing (Frozen Backbone)",
-    "Accuracy (%)":64.1,
-    "Transfer Gain (%)":-3.3,
-    "Negative Transfer?":"\u26a0\ufe0f YES (Negative Transfer)",
-    "Data Source":"Canonical Reference",
-    "Diagnosis":"Moderate negative transfer detected (TG = -3.30%). Significant representation conflict."
+    "Accuracy (%)":70.17,
+    "Transfer Gain (%)":7.0,
+    "Negative Transfer?":"\u2705 NO (Positive Transfer)",
+    "Data Source":"Live GPU",
+    "Diagnosis":"Transfer learning provided a positive gain of +7.00% over random initialization."
   },
   {
     "Dataset":"CIFAR-100 (Natural Objects - Moderate)",
     "Method":"TransferGuard (Adaptive Routing - Ours)",
-    "Accuracy (%)":75.2,
-    "Transfer Gain (%)":7.8,
+    "Accuracy (%)":79.52,
+    "Transfer Gain (%)":16.35,
     "Negative Transfer?":"\u2705 NO (Positive Transfer)",
-    "Data Source":"Canonical Reference",
-    "Diagnosis":"Transfer learning provided a positive gain of +7.80% over random initialization."
+    "Data Source":"Live GPU",
+    "Diagnosis":"Transfer learning provided a positive gain of +16.35% over random initialization."
   },
   {
     "Dataset":"Oxford Flowers-102 (Data Scarce - High)",
