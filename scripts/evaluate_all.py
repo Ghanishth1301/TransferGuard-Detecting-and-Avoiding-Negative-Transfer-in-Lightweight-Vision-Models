@@ -5,6 +5,8 @@ Evaluates benchmark runs across datasets and generates a consolidated
 Transfer Gain (TG) comparison table.
 Automatically detects live training runs from results/ directories,
 falling back to canonical empirical benchmark references when runs are pending.
+
+Authors: Arvind Yadav, Ghanishth Saini, Aakash Jagtap
 """
 
 import argparse

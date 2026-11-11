@@ -3,6 +3,8 @@
 scripts/train_finetune.py
 Baseline: Standard fine-tuning (full) and Linear Probing (frozen backbone)
 from ImageNet pre-trained weights.
+
+Authors: Arvind Yadav, Ghanishth Saini, Aakash Jagtap
 """
 
 import argparse

@@ -1,3 +1,11 @@
+"""
+src/training/loss.py
+Composite loss objective for TransferGuard:
+Total Loss = Classification Cross-Entropy + lambda * Gate Entropy Regularization.
+
+Authors: Arvind Yadav, Ghanishth Saini, Aakash Jagtap
+"""
+
 import torch
 import torch.nn as nn
 from typing import Dict, Optional

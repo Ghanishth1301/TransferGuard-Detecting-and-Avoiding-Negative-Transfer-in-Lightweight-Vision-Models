@@ -1,3 +1,11 @@
+"""
+src/data/dataset_loader.py
+Dataset loaders with automatic downloading, caching, augmentation, and persistent DataLoader workers.
+Supports SVHN, CIFAR-100, Oxford Flowers-102, and lightweight Synthetic datasets for fast testing.
+
+Authors: Arvind Yadav, Ghanishth Saini, Aakash Jagtap
+"""
+
 import os
 import torch
 from torch.utils.data import DataLoader, Dataset, Subset

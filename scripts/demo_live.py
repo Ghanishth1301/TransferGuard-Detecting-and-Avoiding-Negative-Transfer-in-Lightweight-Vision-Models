@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """
 scripts/demo_live.py
-Interactive live presentation demo for TransferGuard.
+Interactive CLI inference demo for TransferGuard.
 Visualizes stage-by-stage transferability gating, real-time routing decisions,
-and avoided negative transfer.
+and avoided negative transfer on edge vision backbones.
+
+Authors: Arvind Yadav, Ghanishth Saini, Aakash Jagtap
 """
 
 import os
@@ -28,9 +30,9 @@ RESET = "\033[0m"
 
 def print_banner():
     print(f"\n{CYAN}{BOLD}{'=' * 75}{RESET}")
-    print(f"{CYAN}{BOLD}  🛡️   TRANSFERGUARD: LIVE PRESENTATION & DEFENSE DEMONSTRATION{RESET}")
+    print(f"{CYAN}{BOLD}  🛡️   TRANSFERGUARD: INTERACTIVE INFERENCE & ADAPTIVE ROUTING DEMO{RESET}")
     print(f"{BOLD}  Detecting & Avoiding Negative Transfer in Lightweight Vision Models{RESET}")
-    print(f"  Authors: Ghanishth Saini (24121), Arvind Yadav (24059), Aakash Jagtap (24157)")
+    print(f"  Authors: Arvind Yadav, Ghanishth Saini, Aakash Jagtap")
     print(f"{CYAN}{BOLD}{'=' * 75}{RESET}\n")
 
 

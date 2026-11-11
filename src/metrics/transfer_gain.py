@@ -1,3 +1,11 @@
+"""
+src/metrics/transfer_gain.py
+Transfer Gain (TG) quantitative evaluation metric and negative transfer diagnostics.
+Calculates TG = Acc_transfer - Acc_scratch and categorizes transfer efficiency.
+
+Authors: Arvind Yadav, Ghanishth Saini, Aakash Jagtap
+"""
+
 from typing import Dict, List, Optional, Tuple, Union
 import numpy as np
 

@@ -2,6 +2,8 @@
 """
 scripts/train_scratch.py
 Baseline: Trains lightweight vision backbones from random initialization (scratch).
+
+Authors: Arvind Yadav, Ghanishth Saini, Aakash Jagtap
 """
 
 import argparse

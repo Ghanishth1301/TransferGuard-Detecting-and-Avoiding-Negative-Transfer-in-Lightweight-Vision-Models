@@ -1,3 +1,10 @@
+"""
+src/data/transforms.py
+Domain-specific image augmentation and preprocessing pipelines.
+
+Authors: Arvind Yadav, Ghanishth Saini, Aakash Jagtap
+"""
+
 from torchvision import transforms
 from typing import Tuple
 

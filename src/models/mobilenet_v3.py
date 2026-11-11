@@ -1,3 +1,12 @@
+"""
+src/models/mobilenet_v3.py
+Modular PyTorch wrapper for MobileNetV3 (Small & Large) vision backbones.
+Provides forward activation hooks for intermediate stage feature extraction,
+spatial average pooling, and selective stage-wise parameter freezing.
+
+Authors: Arvind Yadav, Ghanishth Saini, Aakash Jagtap
+"""
+
 import torch
 import torch.nn as nn
 from typing import Dict, List, Optional, Tuple
@@ -9,6 +18,13 @@ class MobileNetV3Wrapper(nn.Module):
     """
     Wrapper for MobileNetV3 (Small or Large) with intermediate stage hooks,
     representation extraction, and selective layer freezing capabilities.
+
+    Architecture stages are grouped into 5 logical blocks:
+      - Stem: Initial 3x3 conv layer (edges & basic gabor features)
+      - Stage Early: Inverted residual blocks 1-2 (corners, simple textures)
+      - Stage Mid-1: Inverted residual blocks 3-5 (complex textures, motifs)
+      - Stage Mid-2: Inverted residual blocks 6-8 (parts & semantic patterns)
+      - Stage Deep: Final inverted residual blocks (class-specific representations)
     """
 
     def __init__(
@@ -23,7 +39,7 @@ class MobileNetV3Wrapper(nn.Module):
         self.pretrained = pretrained
         self.num_classes = num_classes
 
-        # Load backbone
+        # Load pre-trained or randomly initialized backbone from torchvision
         if self.variant == "mobilenet_v3_small":
             weights = MobileNet_V3_Small_Weights.DEFAULT if pretrained else None
             self.backbone = models.mobilenet_v3_small(weights=weights)
@@ -33,9 +49,9 @@ class MobileNetV3Wrapper(nn.Module):
             self.backbone = models.mobilenet_v3_large(weights=weights)
             in_features = self.backbone.classifier[0].in_features
         else:
-            raise ValueError(f"Unsupported variant: {variant}")
+            raise ValueError(f"Unsupported variant: {variant}. Choose 'mobilenet_v3_small' or 'mobilenet_v3_large'.")
 
-        # Replace classification head
+        # Re-initialize the final classification projection head for target domain num_classes
         last_channel = self.backbone.classifier[3].in_features
         self.backbone.classifier = nn.Sequential(
             nn.Linear(in_features, last_channel),
@@ -44,11 +60,8 @@ class MobileNetV3Wrapper(nn.Module):
             nn.Linear(last_channel, num_classes),
         )
 
-        # Stage definitions for hook extractions
-        # MobileNetV3 features is a Sequential of inverted residual blocks (0 to len-1)
-        # Small has 13 feature blocks (0..12), Large has 17 feature blocks (0..16)
+        # Map inverted residual blocks into 5 progressive representation stages
         num_blocks = len(self.backbone.features)
-        # Group into 5 logical stages: Stem, Early, Mid-Early, Mid-Late, Deep
         step = max(1, num_blocks // 5)
         self.stage_indices = {
             "stem": 0,
@@ -63,10 +76,13 @@ class MobileNetV3Wrapper(nn.Module):
         self._register_hooks()
 
     def _register_hooks(self):
-        """Registers forward hooks on stage boundary modules."""
+        """
+        Registers forward hooks on stage boundary modules.
+        During forward inference, spatial feature maps [B, C, H, W] are globally average-pooled
+        into compact [B, C] vector representations for CKA analysis and gating.
+        """
         def get_hook(name: str):
             def hook(module, input, output):
-                # Spatially pool feature map to [B, C]
                 if output.dim() == 4:
                     pooled = output.mean(dim=[2, 3])
                 else:
@@ -79,12 +95,15 @@ class MobileNetV3Wrapper(nn.Module):
             self._hooks.append(hook_handle)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Standard forward pass returning logits."""
+        """Standard forward pass returning target class logits [B, num_classes]."""
         return self.backbone(x)
 
     def forward_with_features(self, x: torch.Tensor) -> Tuple[torch.Tensor, Dict[str, torch.Tensor]]:
         """
-        Forward pass returning both final class logits and intermediate stage representations.
+        Forward pass returning both final class logits and pooled intermediate stage representations.
+        Returns:
+            logits: Tensor of shape [B, num_classes]
+            features: Dict mapping stage_name -> Tensor [B, C_l]
         """
         self._hook_features.clear()
         logits = self.backbone(x)
@@ -92,14 +111,16 @@ class MobileNetV3Wrapper(nn.Module):
         return logits, features
 
     def freeze_stages(self, stages_to_freeze: List[str]):
-        """Freezes backbone blocks up to the specified stages."""
+        """
+        Freezes backbone layers up to the highest specified stage index.
+        Freezing sets requires_grad = False, eliminating backprop gradient computation.
+        """
         stage_order = list(self.stage_indices.keys())
         frozen_indices = set()
         for stage in stages_to_freeze:
             if stage in self.stage_indices:
                 idx = self.stage_indices[stage]
                 stage_pos = stage_order.index(stage)
-                # Freeze from 0 up to idx
                 for prev_s in stage_order[: stage_pos + 1]:
                     frozen_indices.add(self.stage_indices[prev_s])
 
@@ -110,17 +131,17 @@ class MobileNetV3Wrapper(nn.Module):
                 param.requires_grad = requires_grad
 
     def freeze_backbone(self):
-        """Freezes all features (linear probe mode)."""
+        """Freezes all feature extraction blocks (for linear probing evaluation)."""
         for param in self.backbone.features.parameters():
             param.requires_grad = False
 
     def unfreeze_all(self):
-        """Unfreezes all parameters."""
+        """Unfreezes all parameters across backbone and classifier for full fine-tuning."""
         for param in self.parameters():
             param.requires_grad = True
 
     def get_stage_channels(self, sample_input: Optional[torch.Tensor] = None) -> Dict[str, int]:
-        """Calculates channel dimension for each stage representation."""
+        """Calculates channel dimension C_l for each intermediate stage representation."""
         if sample_input is None:
             sample_input = torch.zeros(1, 3, 224, 224, device=next(self.parameters()).device)
         with torch.no_grad():

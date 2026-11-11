@@ -1,3 +1,13 @@
+"""
+src/metrics/cka.py
+Linear Centered Kernel Alignment (CKA) computation engine.
+Measures functional representational similarity between hidden representations
+extracted from neural networks invariant to orthogonal transformations and isotropic scaling.
+
+Reference: Kornblith et al., "Similarity of Neural Network Representations Revisited", ICML 2019.
+Authors: Arvind Yadav, Ghanishth Saini, Aakash Jagtap
+"""
+
 import torch
 import numpy as np
 from typing import Dict, List, Optional, Tuple, Union

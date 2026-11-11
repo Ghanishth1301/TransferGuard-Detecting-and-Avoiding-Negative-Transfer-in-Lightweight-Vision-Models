@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """
 scripts/plot_results.py
-Generates 300 DPI publication and presentation figures for the TransferGuard project.
+Generates 300 DPI publication figures for the TransferGuard project.
 Automatically detects and prioritizes live GPU training results for ANY dataset and model,
 clearly differentiating between [Live GPU Data] and [Canonical Reference] everywhere.
 All annotations and callouts are dynamically computed based on real experimental conditions.
+
+Authors: Arvind Yadav, Ghanishth Saini, Aakash Jagtap
 """
 
 import argparse
@@ -27,7 +29,7 @@ from src.utils.visualization import set_academic_style
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Generate Presentation & Report Figures")
+    parser = argparse.ArgumentParser(description="Generate 300 DPI Publication Figures")
     parser.add_argument("--results-dir", type=str, default="results", help="Directory where experiment outputs reside")
     parser.add_argument("--output-dir", type=str, default="results/figures", help="Directory to save generated plots")
     return parser.parse_args()
@@ -598,7 +600,7 @@ def main():
     args = parse_args()
     os.makedirs(args.output_dir, exist_ok=True)
 
-    print("🎨 Generating Presentation & Report Figures at 300 DPI...")
+    print("🎨 Generating Publication Figures at 300 DPI...")
     print(f"   Source results directory: {args.results_dir}")
     print(f"   Target figures directory: {args.output_dir}")
 

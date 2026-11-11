@@ -1,3 +1,11 @@
+"""
+src/training/trainer.py
+Unified training engine supporting mixed-precision AMP, learning rate scheduling,
+dynamic stage freezing callbacks, fault-tolerant checkpoint resumption, and metric logging.
+
+Authors: Arvind Yadav, Ghanishth Saini, Aakash Jagtap
+"""
+
 import os
 import time
 import torch

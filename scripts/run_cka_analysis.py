@@ -3,6 +3,8 @@
 scripts/run_cka_analysis.py
 Computes layer-wise Centered Kernel Alignment (CKA) between ImageNet pre-trained representations
 and target domain representations, saving diagnostic heatmaps.
+
+Authors: Arvind Yadav, Ghanishth Saini, Aakash Jagtap
 """
 
 import argparse

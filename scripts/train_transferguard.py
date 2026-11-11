@@ -3,6 +3,8 @@
 scripts/train_transferguard.py
 Proposed Method: TransferGuard Adaptive Routing & Dynamic Layer Freezing.
 Prevents negative transfer by locking or bypassing mismatched deep representations.
+
+Authors: Arvind Yadav, Ghanishth Saini, Aakash Jagtap
 """
 
 import argparse
