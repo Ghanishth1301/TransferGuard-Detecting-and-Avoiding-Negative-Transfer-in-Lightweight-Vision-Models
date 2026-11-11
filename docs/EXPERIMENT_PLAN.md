@@ -72,11 +72,12 @@ To thoroughly evaluate the TransferGuard mechanism against negative transfer, th
 - Verify that TransferGuard identifies harmful deep layers in SVHN and automatically locks/bypasses them.
 - Compare final accuracy against standard fine-tuning and scratch.
 
-### Phase 5: Ablation Studies & Presentation Assets
+### Phase 5: Ablation Studies & Publication Assets
 - **Ablation 1:** Freeze threshold sensitivity analysis ($\tau \in [0.4, 0.6, 0.8]$).
 - **Ablation 2:** Compare TransferGuard adaptive routing vs fixed heuristic (freeze first $k$ layers).
-- Generate presentation plots:
-  - Bar chart: Transfer Gain across datasets and methods.
-  - Line plot: Layer-wise CKA curves showing the "divergence cliff".
-  - Convergence plot: Loss and accuracy curves over training epochs.
+- Generate publication figures:
+  - Bar chart: Transfer Gain across datasets and methods (`transfer_gain_comparison.png`).
+  - Line plot: Layer-wise CKA curves showing the "divergence cliff" (`cka_divergence_curve.png`).
+  - Dynamic routing profiles (`transferguard_*_routing_profile.png`).
+  - Convergence plot: Loss and accuracy curves over training epochs (`training_convergence_*.png`).
 

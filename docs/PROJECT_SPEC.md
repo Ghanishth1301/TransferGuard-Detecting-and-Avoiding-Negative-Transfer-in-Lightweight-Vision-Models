@@ -1,11 +1,7 @@
 # TransferGuard: Detecting and Avoiding Negative Transfer in Lightweight Vision Models
 ## Comprehensive Project Specification
 
-**Course:** Computer Vision (CV) Project  
-**Authors:**
-- **Ghanishth Saini** (Roll: 24121)
-- **Arvind Yadav** (Roll: 24059)
-- **Aakash Jagtap** (Roll: 24157)
+**Authors:** Arvind Yadav, Ghanishth Saini, Aakash Jagtap
 
 ---
 
@@ -111,5 +107,5 @@ Based on $S_l$ and an adaptive threshold $\tau_l$:
 1. **End-to-End Reproducible Repository:** Modular PyTorch code supporting CPU dry-runs, automated testing, and full Google Colab execution with GPU acceleration.
 2. **Empirical Verification:** Demonstration of negative transfer on SVHN ($TG < 0$) with standard fine-tuning, and recovery ($TG > 0$) using TransferGuard adaptive routing.
 3. **Visual Diagnostics:** Automated generation of publication-quality CKA heatmaps, Transfer Gain comparisons, layer freezing distributions, and training loss/accuracy trajectories.
-4. **Presentation & Defense Readiness:** Complete presentation guide, speaker scripts, and technical Q&A preparation for evaluation.
+4. **Reproducibility & Verification Protocols:** Step-by-step automated test suites and reproducible CLI pipelines for all benchmark datasets and models.
 
