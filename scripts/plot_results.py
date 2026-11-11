@@ -99,6 +99,10 @@ def load_benchmark_data(results_dir: str):
         {"Dataset": "SVHN (Digits - Severe Mismatch)", "Method": "Standard Fine-Tuning (Full)", "Accuracy (%)": 97.12, "Transfer Gain (%)": 0.69, "Data Source": "Canonical Reference"},
         {"Dataset": "SVHN (Digits - Severe Mismatch)", "Method": "Linear Probing (Frozen Backbone)", "Accuracy (%)": 65.53, "Transfer Gain (%)": -30.90, "Data Source": "Canonical Reference"},
         {"Dataset": "SVHN (Digits - Severe Mismatch)", "Method": "TransferGuard (Adaptive Routing - Ours)", "Accuracy (%)": 97.14, "Transfer Gain (%)": 0.71, "Data Source": "Canonical Reference"},
+        {"Dataset": "SVHN (ShuffleNetV2 - Architecture Generalization)", "Method": "Train from Scratch (Random Init)", "Accuracy (%)": 96.01, "Transfer Gain (%)": 0.0, "Data Source": "Canonical Reference"},
+        {"Dataset": "SVHN (ShuffleNetV2 - Architecture Generalization)", "Method": "Standard Fine-Tuning (Full)", "Accuracy (%)": 96.96, "Transfer Gain (%)": 0.95, "Data Source": "Canonical Reference"},
+        {"Dataset": "SVHN (ShuffleNetV2 - Architecture Generalization)", "Method": "Linear Probing (Frozen Backbone)", "Accuracy (%)": 46.01, "Transfer Gain (%)": -50.00, "Data Source": "Canonical Reference"},
+        {"Dataset": "SVHN (ShuffleNetV2 - Architecture Generalization)", "Method": "TransferGuard (Adaptive Routing - Ours)", "Accuracy (%)": 97.03, "Transfer Gain (%)": 1.02, "Data Source": "Canonical Reference"},
         {"Dataset": "CIFAR-100 (Natural Objects - Moderate)", "Method": "Train from Scratch (Random Init)", "Accuracy (%)": 67.40, "Transfer Gain (%)": 0.0, "Data Source": "Canonical Reference"},
         {"Dataset": "CIFAR-100 (Natural Objects - Moderate)", "Method": "Standard Fine-Tuning (Full)", "Accuracy (%)": 73.85, "Transfer Gain (%)": 6.45, "Data Source": "Canonical Reference"},
         {"Dataset": "CIFAR-100 (Natural Objects - Moderate)", "Method": "Linear Probing (Frozen Backbone)", "Accuracy (%)": 64.10, "Transfer Gain (%)": -3.30, "Data Source": "Canonical Reference"},
@@ -127,7 +131,17 @@ def plot_transfer_gain_figure(results_dir: str, save_path: str):
     data_sources = []
 
     for r in transfer_rows:
-        raw_ds = r["Dataset"].split("(")[0].strip()
+        if "ShuffleNet" in r["Dataset"] or "shufflenet" in r["Dataset"].lower():
+            raw_ds = "SVHN\n(ShuffleNetV2)"
+        elif "SVHN" in r["Dataset"]:
+            raw_ds = "SVHN\n(MobileNetV3)"
+        elif "CIFAR" in r["Dataset"]:
+            raw_ds = "CIFAR-100\n(MobileNetV3)"
+        elif "Flower" in r["Dataset"] or "flower" in r["Dataset"].lower():
+            raw_ds = "Flowers-102\n(MobileNetV3)"
+        else:
+            raw_ds = r["Dataset"].split("(")[0].strip()
+
         raw_m = r["Method"].replace("Standard Fine-Tuning (Full)", "Full Fine-Tune") \
                            .replace("Linear Probing (Frozen Backbone)", "Linear Probe") \
                            .replace("TransferGuard (Adaptive Routing - Ours)", "TransferGuard")
@@ -140,7 +154,7 @@ def plot_transfer_gain_figure(results_dir: str, save_path: str):
 
     colors = ["#d9534f" if g < 0 else "#2b8a3e" for g in gains]
 
-    fig, ax = plt.subplots(figsize=(12.5, 6.2))
+    fig, ax = plt.subplots(figsize=(15.5, 6.5))
     bars = ax.bar(categories, gains, color=colors, width=0.55, edgecolor="black", linewidth=0.9, zorder=3)
 
     ax.axhline(0, color="black", linewidth=1.4, linestyle="-", alpha=0.9, zorder=4)
@@ -163,14 +177,14 @@ def plot_transfer_gain_figure(results_dir: str, save_path: str):
         )
 
     # Shaded Negative vs Positive transfer regions
-    min_y = min(-35.0, min(gains) - 4.0)
-    max_y = max(40.0, max(gains) + 6.0)
+    min_y = min(-55.0, min(gains) - 5.0)
+    max_y = max(88.0, max(gains) + 7.0)
     ax.set_ylim(min_y, max_y)
     ax.axhspan(min_y, 0, color="#f8d7da", alpha=0.45, label="Negative Transfer Zone (TG < 0 - Harmful)")
     ax.axhspan(0, max_y, color="#d4edda", alpha=0.35, label="Positive Transfer Zone (TG > 0 - Beneficial)")
 
     ax.legend(loc="upper left", framealpha=0.95)
-    plt.xticks(rotation=0, fontsize=8.2)
+    plt.xticks(rotation=0, fontsize=8.0)
     plt.tight_layout()
     plt.savefig(save_path, dpi=300)
     plt.close()
@@ -190,25 +204,32 @@ def plot_layerwise_cka_curves(results_dir: str, save_path: str):
     set_academic_style()
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
 
-    stages = ["Stem", "Stage Early", "Stage Mid-1", "Stage Mid-2", "Stage Deep"]
+    stages = ["Stem", "Stage Early / 2", "Stage Mid-1 / 3", "Stage Mid-2 / 4", "Stage Deep"]
 
     # Canonical default reference curves
     dataset_curves = {
-        "SVHN (Street Digits)": {
+        "SVHN - MobileNetV3": {
             "values": [0.88, 0.74, 0.52, 0.36, 0.28],
             "color": "#d9534f",
             "marker": "o",
             "source": "Canonical Reference",
-            "pattern": "*svhn*.json",
+            "pattern": "*mobilenet*svhn*.json",
         },
-        "CIFAR-100 (Natural Objects)": {
+        "SVHN - ShuffleNetV2": {
+            "values": [0.95, 0.68, 0.01, 0.00, 0.00],
+            "color": "#e67700",
+            "marker": "D",
+            "source": "Canonical Reference",
+            "pattern": "*shufflenet*svhn*.json",
+        },
+        "CIFAR-100 - MobileNetV3": {
             "values": [0.92, 0.85, 0.76, 0.68, 0.61],
             "color": "#0275d8",
             "marker": "s",
             "source": "Canonical Reference",
             "pattern": "*cifar*.json",
         },
-        "Oxford Flowers-102 (Botanical)": {
+        "Oxford Flowers-102 - MobileNetV3": {
             "values": [0.95, 0.91, 0.88, 0.84, 0.81],
             "color": "#2b8a3e",
             "marker": "^",
@@ -234,7 +255,7 @@ def plot_layerwise_cka_curves(results_dir: str, save_path: str):
                 except Exception as e:
                     print(f"⚠️ Notice: Failed reading CKA file {matches[0]}: {e}")
 
-    fig, ax = plt.subplots(figsize=(10.0, 5.8))
+    fig, ax = plt.subplots(figsize=(10.8, 6.0))
 
     deepest_divergence_val = 1.0
     deepest_divergence_ds = None
@@ -254,24 +275,24 @@ def plot_layerwise_cka_curves(results_dir: str, save_path: str):
         deep_score = cfg["values"][-1]
         if deep_score < deepest_divergence_val:
             deepest_divergence_val = deep_score
-            deepest_divergence_ds = ds_name.split("(")[0].strip()
+            deepest_divergence_ds = ds_name.split("-")[0].strip()
 
     # Highlight negative transfer danger cliff
     ax.axhspan(0.0, 0.40, color="#f8d7da", alpha=0.35, label="Severe Divergence Zone (CKA < 0.40)")
     ax.axhline(0.40, color="#d9534f", linestyle="--", linewidth=1.2, alpha=0.8)
 
     ax.set_ylabel("Linear CKA Representation Similarity", weight="bold")
-    ax.set_xlabel("Backbone Network Depth (MobileNetV3 Stages)", weight="bold")
+    ax.set_xlabel("Backbone Network Depth (Progressive Feature Stages)", weight="bold")
     ax.set_title("Layer-wise Representational Divergence from ImageNet Features\n[Explicit Source Tagging on All Curves]", pad=15, weight="bold")
     ax.set_ylim(-0.02, 1.08)
-    ax.legend(loc="lower left", framealpha=0.95)
+    ax.legend(loc="upper right", framealpha=0.95)
 
     # Dynamic annotation: only annotate if an actual severe divergence cliff exists (< 0.40)
     if deepest_divergence_val < 0.40 and deepest_divergence_ds:
         ax.annotate(
-            f"{deepest_divergence_ds} Divergence Cliff (CKA={deepest_divergence_val:.2f})\nLow similarity in deep representations",
+            f"Representational Divergence Cliff (CKA → {deepest_divergence_val:.2f})\nTarget domain diverges from ImageNet features",
             xy=(4, deepest_divergence_val),
-            xytext=(3.15, 0.22),
+            xytext=(2.3, 0.22),
             arrowprops=dict(facecolor="#d9534f", shrink=0.08, width=1.5, headwidth=8),
             bbox=dict(boxstyle="round,pad=0.4", fc="#ffffff", ec="#d9534f", lw=1.5),
             fontsize=9.0,
@@ -352,6 +373,9 @@ def render_single_routing_profile(scores_dict, actions_dict, freeze_th, bypass_t
         "stage_mid_1": "Stage Mid-1\n(Blocks 3-5)",
         "stage_mid_2": "Stage Mid-2\n(Blocks 6-8)",
         "stage_deep": "Stage Deep\n(Blocks 9-12)",
+        "stage_2": "Stage 2\n(ShuffleNet)",
+        "stage_3": "Stage 3\n(ShuffleNet)",
+        "stage_4": "Stage 4\n(ShuffleNet)",
     }
 
     stages = list(scores_dict.keys())
@@ -417,8 +441,8 @@ def generate_all_routing_profiles(results_dir: str, output_dir: str):
             render_single_routing_profile(scores, actions, f_th, b_th, is_live, clean_title, save_path)
             generated.append(save_path)
 
-            # If this is svhn, also update the canonical backward-compatible filename
-            if "svhn" in exp_name.lower():
+            # If this is svhn mobilenetv3, also update the canonical backward-compatible filename
+            if exp_name.lower() == "svhn_mobilenetv3":
                 canonical_svhn_path = os.path.join(output_dir, "transferguard_svhn_routing_profile.png")
                 render_single_routing_profile(scores, actions, f_th, b_th, is_live, clean_title, canonical_svhn_path)
 
@@ -553,8 +577,8 @@ def generate_all_convergence_plots(results_dir: str, output_dir: str):
         render_single_convergence_plot(exp_path, clean_title, save_path)
         generated.append(save_path)
 
-        # If svhn, also update canonical comparison path
-        if "svhn" in exp_name.lower():
+        # If svhn mobilenetv3, also update canonical comparison path
+        if exp_name.lower() == "svhn_mobilenetv3":
             canonical_path = os.path.join(output_dir, "training_convergence_comparison.png")
             render_single_convergence_plot(exp_path, clean_title, canonical_path)
 
