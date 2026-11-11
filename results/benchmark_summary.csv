@@ -3,11 +3,15 @@ SVHN (Digits - Severe Mismatch),Train from Scratch (Random Init),96.43,0.0,Basel
 SVHN (Digits - Severe Mismatch),Standard Fine-Tuning (Full),97.12,0.69,✅ NO (Positive Transfer),Live GPU,Transfer learning provided a positive gain of +0.69% over random initialization.
 SVHN (Digits - Severe Mismatch),Linear Probing (Frozen Backbone),65.53,-30.9,⚠️ YES (Negative Transfer),Live GPU,Severe negative transfer detected (TG = -30.90%). Catastrophic domain mismatch.
 SVHN (Digits - Severe Mismatch),TransferGuard (Adaptive Routing - Ours),97.14,0.71,✅ NO (Positive Transfer),Live GPU,Transfer learning provided a positive gain of +0.71% over random initialization.
+SVHN (ShuffleNetV2 - Architecture Generalization),Train from Scratch (Random Init),96.01,0.0,Baseline (N/A),Live GPU,Baseline reference performance without source domain knowledge.
+SVHN (ShuffleNetV2 - Architecture Generalization),Standard Fine-Tuning (Full),96.96,0.95,✅ NO (Positive Transfer),Live GPU,Transfer learning provided a positive gain of +0.95% over random initialization.
+SVHN (ShuffleNetV2 - Architecture Generalization),Linear Probing (Frozen Backbone),46.01,-50.0,⚠️ YES (Negative Transfer),Live GPU,Severe negative transfer detected (TG = -50.00%). Catastrophic domain mismatch.
+SVHN (ShuffleNetV2 - Architecture Generalization),TransferGuard (Adaptive Routing - Ours),97.03,1.02,✅ NO (Positive Transfer),Live GPU,Transfer learning provided a positive gain of +1.02% over random initialization.
 CIFAR-100 (Natural Objects - Moderate),Train from Scratch (Random Init),63.17,0.0,Baseline (N/A),Live GPU,Baseline reference performance without source domain knowledge.
 CIFAR-100 (Natural Objects - Moderate),Standard Fine-Tuning (Full),81.86,18.69,✅ NO (Positive Transfer),Live GPU,Transfer learning provided a positive gain of +18.69% over random initialization.
 CIFAR-100 (Natural Objects - Moderate),Linear Probing (Frozen Backbone),70.17,7.0,✅ NO (Positive Transfer),Live GPU,Transfer learning provided a positive gain of +7.00% over random initialization.
 CIFAR-100 (Natural Objects - Moderate),TransferGuard (Adaptive Routing - Ours),79.52,16.35,✅ NO (Positive Transfer),Live GPU,Transfer learning provided a positive gain of +16.35% over random initialization.
-Oxford Flowers-102 (Data Scarce - High),Train from Scratch (Random Init),51.8,0.0,Baseline (N/A),Canonical Reference,Baseline reference performance without source domain knowledge.
-Oxford Flowers-102 (Data Scarce - High),Standard Fine-Tuning (Full),86.4,34.6,✅ NO (Positive Transfer),Canonical Reference,Transfer learning provided a positive gain of +34.60% over random initialization.
-Oxford Flowers-102 (Data Scarce - High),Linear Probing (Frozen Backbone),81.2,29.4,✅ NO (Positive Transfer),Canonical Reference,Transfer learning provided a positive gain of +29.40% over random initialization.
-Oxford Flowers-102 (Data Scarce - High),TransferGuard (Adaptive Routing - Ours),87.1,35.3,✅ NO (Positive Transfer),Canonical Reference,Transfer learning provided a positive gain of +35.30% over random initialization.
+Oxford Flowers-102 (Data Scarce - High),Train from Scratch (Random Init),1.43,0.0,Baseline (N/A),Live GPU,Baseline reference performance without source domain knowledge.
+Oxford Flowers-102 (Data Scarce - High),Standard Fine-Tuning (Full),81.39,79.96,✅ NO (Positive Transfer),Live GPU,Transfer learning provided a positive gain of +79.96% over random initialization.
+Oxford Flowers-102 (Data Scarce - High),Linear Probing (Frozen Backbone),74.81,73.38,✅ NO (Positive Transfer),Live GPU,Transfer learning provided a positive gain of +73.38% over random initialization.
+Oxford Flowers-102 (Data Scarce - High),TransferGuard (Adaptive Routing - Ours),80.22,78.79,✅ NO (Positive Transfer),Live GPU,Transfer learning provided a positive gain of +78.79% over random initialization.

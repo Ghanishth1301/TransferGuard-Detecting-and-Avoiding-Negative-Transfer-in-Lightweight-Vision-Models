@@ -36,6 +36,42 @@
     "Diagnosis":"Transfer learning provided a positive gain of +0.71% over random initialization."
   },
   {
+    "Dataset":"SVHN (ShuffleNetV2 - Architecture Generalization)",
+    "Method":"Train from Scratch (Random Init)",
+    "Accuracy (%)":96.01,
+    "Transfer Gain (%)":0.0,
+    "Negative Transfer?":"Baseline (N\/A)",
+    "Data Source":"Live GPU",
+    "Diagnosis":"Baseline reference performance without source domain knowledge."
+  },
+  {
+    "Dataset":"SVHN (ShuffleNetV2 - Architecture Generalization)",
+    "Method":"Standard Fine-Tuning (Full)",
+    "Accuracy (%)":96.96,
+    "Transfer Gain (%)":0.95,
+    "Negative Transfer?":"\u2705 NO (Positive Transfer)",
+    "Data Source":"Live GPU",
+    "Diagnosis":"Transfer learning provided a positive gain of +0.95% over random initialization."
+  },
+  {
+    "Dataset":"SVHN (ShuffleNetV2 - Architecture Generalization)",
+    "Method":"Linear Probing (Frozen Backbone)",
+    "Accuracy (%)":46.01,
+    "Transfer Gain (%)":-50.0,
+    "Negative Transfer?":"\u26a0\ufe0f YES (Negative Transfer)",
+    "Data Source":"Live GPU",
+    "Diagnosis":"Severe negative transfer detected (TG = -50.00%). Catastrophic domain mismatch."
+  },
+  {
+    "Dataset":"SVHN (ShuffleNetV2 - Architecture Generalization)",
+    "Method":"TransferGuard (Adaptive Routing - Ours)",
+    "Accuracy (%)":97.03,
+    "Transfer Gain (%)":1.02,
+    "Negative Transfer?":"\u2705 NO (Positive Transfer)",
+    "Data Source":"Live GPU",
+    "Diagnosis":"Transfer learning provided a positive gain of +1.02% over random initialization."
+  },
+  {
     "Dataset":"CIFAR-100 (Natural Objects - Moderate)",
     "Method":"Train from Scratch (Random Init)",
     "Accuracy (%)":63.17,
@@ -74,37 +110,37 @@
   {
     "Dataset":"Oxford Flowers-102 (Data Scarce - High)",
     "Method":"Train from Scratch (Random Init)",
-    "Accuracy (%)":51.8,
+    "Accuracy (%)":1.43,
     "Transfer Gain (%)":0.0,
     "Negative Transfer?":"Baseline (N\/A)",
-    "Data Source":"Canonical Reference",
+    "Data Source":"Live GPU",
     "Diagnosis":"Baseline reference performance without source domain knowledge."
   },
   {
     "Dataset":"Oxford Flowers-102 (Data Scarce - High)",
     "Method":"Standard Fine-Tuning (Full)",
-    "Accuracy (%)":86.4,
-    "Transfer Gain (%)":34.6,
+    "Accuracy (%)":81.39,
+    "Transfer Gain (%)":79.96,
     "Negative Transfer?":"\u2705 NO (Positive Transfer)",
-    "Data Source":"Canonical Reference",
-    "Diagnosis":"Transfer learning provided a positive gain of +34.60% over random initialization."
+    "Data Source":"Live GPU",
+    "Diagnosis":"Transfer learning provided a positive gain of +79.96% over random initialization."
   },
   {
     "Dataset":"Oxford Flowers-102 (Data Scarce - High)",
     "Method":"Linear Probing (Frozen Backbone)",
-    "Accuracy (%)":81.2,
-    "Transfer Gain (%)":29.4,
+    "Accuracy (%)":74.81,
+    "Transfer Gain (%)":73.38,
     "Negative Transfer?":"\u2705 NO (Positive Transfer)",
-    "Data Source":"Canonical Reference",
-    "Diagnosis":"Transfer learning provided a positive gain of +29.40% over random initialization."
+    "Data Source":"Live GPU",
+    "Diagnosis":"Transfer learning provided a positive gain of +73.38% over random initialization."
   },
   {
     "Dataset":"Oxford Flowers-102 (Data Scarce - High)",
     "Method":"TransferGuard (Adaptive Routing - Ours)",
-    "Accuracy (%)":87.1,
-    "Transfer Gain (%)":35.3,
+    "Accuracy (%)":80.22,
+    "Transfer Gain (%)":78.79,
     "Negative Transfer?":"\u2705 NO (Positive Transfer)",
-    "Data Source":"Canonical Reference",
-    "Diagnosis":"Transfer learning provided a positive gain of +35.30% over random initialization."
+    "Data Source":"Live GPU",
+    "Diagnosis":"Transfer learning provided a positive gain of +78.79% over random initialization."
   }
 ]
