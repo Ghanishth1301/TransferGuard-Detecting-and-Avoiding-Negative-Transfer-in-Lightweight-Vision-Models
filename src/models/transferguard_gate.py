@@ -90,14 +90,15 @@ class LayerGatingController(nn.Module):
     def compute_gate_regularization_loss(self, scores: Dict[str, torch.Tensor]) -> torch.Tensor:
         """
         Encourages decisive gating (bimodal distribution near 0 or 1, avoiding vague indecision)
-        using binary entropy regularization.
+        using binary entropy regularization. Computed in float32 for AMP stability.
         """
         loss = torch.tensor(0.0, device=next(self.parameters()).device)
-        eps = 1e-6
+        eps = 1e-5
         for score in scores.values():
-            p = torch.clamp(score, eps, 1.0 - eps)
+            p = score.float()
+            p = torch.clamp(p, eps, 1.0 - eps)
             # Binary entropy: - (p*log(p) + (1-p)*log(1-p)) -> minimizing encourages 0 or 1
             entropy = -(p * torch.log(p) + (1.0 - p) * torch.log(1.0 - p)).mean()
-            loss = loss + entropy
+            loss = loss + entropy.to(score.dtype)
         return loss / max(1, len(scores))
 
