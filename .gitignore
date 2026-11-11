@@ -34,3 +34,8 @@ results/transferguard_adaptive/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Presentation & slide deck binaries
+*.pptx
+*.ppt
+*.key
