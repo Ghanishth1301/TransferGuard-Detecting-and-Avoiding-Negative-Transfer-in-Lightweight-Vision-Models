@@ -182,7 +182,7 @@ def plot_layerwise_cka_curves(results_dir: str, save_path: str):
     ax.annotate(
         f"Divergence Cliff (CKA={deep_val:.2f})\nDeep filters conflict with digits",
         xy=(4, deep_val),
-        xytext=(2.4, 0.12),
+        xytext=(3.15, 0.22),
         arrowprops=dict(facecolor="#d9534f", shrink=0.08, width=1.5, headwidth=8),
         bbox=dict(boxstyle="round,pad=0.4", fc="#ffffff", ec="#d9534f", lw=1.5),
         fontsize=9.5,
@@ -297,7 +297,7 @@ def plot_transferguard_routing_profile(results_dir: str, save_path: str):
 
     subtitle_tag = "[Live GPU Trained Checkpoint]" if is_live else "[Canonical Reference]"
     ax.set_ylabel(r"Transferability Score $S_l \in [0, 1]$", weight="bold")
-    ax.set_ylim(-0.02, 1.15)
+    ax.set_ylim(-0.02, 1.25)
     ax.set_title(f"TransferGuard Dynamic Routing Profile on SVHN\n{subtitle_tag}", pad=15, weight="bold")
 
     # Annotate bars with scores and assigned actions
@@ -313,7 +313,7 @@ def plot_transferguard_routing_profile(results_dir: str, save_path: str):
             fontsize=9.5,
         )
 
-    ax.legend(loc="upper left", framealpha=0.95)
+    ax.legend(loc="upper right", framealpha=0.95)
     plt.tight_layout()
     plt.savefig(save_path, dpi=300)
     plt.close()
