@@ -6,6 +6,7 @@ and target domain representations, saving diagnostic heatmaps.
 """
 
 import argparse
+import json
 import os
 import sys
 
@@ -101,6 +102,19 @@ def main():
         title=f"CKA Representation Alignment: ImageNet vs {args.dataset.upper()} ({args.model})",
     )
     print(f"\n✅ Diagnostic CKA Heatmap saved to: {save_fig}")
+
+    # 6. Save Structured CKA JSON for downstream publication plots
+    cka_data = {
+        "dataset": args.dataset,
+        "model": args.model,
+        "stages": layers_s,
+        "diagonal_cka": [round(float(matrix[i, i]), 4) for i in range(len(layers_s))],
+        "full_matrix": matrix.tolist(),
+    }
+    json_path = os.path.join(args.output_dir, f"cka_{args.model}_{args.dataset}.json")
+    with open(json_path, "w") as f:
+        json.dump(cka_data, f, indent=2)
+    print(f"📄 Saved structured CKA alignment metrics to: {json_path}")
 
 
 if __name__ == "__main__":

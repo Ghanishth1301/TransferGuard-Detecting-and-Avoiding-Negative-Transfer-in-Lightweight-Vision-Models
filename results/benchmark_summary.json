@@ -2,38 +2,38 @@
   {
     "Dataset":"SVHN (Digits - Severe Mismatch)",
     "Method":"Train from Scratch (Random Init)",
-    "Accuracy (%)":88.62,
+    "Accuracy (%)":96.43,
     "Transfer Gain (%)":0.0,
     "Negative Transfer?":"Baseline (N\/A)",
-    "Data Source":"Canonical Reference",
+    "Data Source":"Live GPU",
     "Diagnosis":"Baseline reference performance without source domain knowledge."
   },
   {
     "Dataset":"SVHN (Digits - Severe Mismatch)",
     "Method":"Standard Fine-Tuning (Full)",
-    "Accuracy (%)":84.18,
-    "Transfer Gain (%)":-4.44,
-    "Negative Transfer?":"\u26a0\ufe0f YES (Negative Transfer)",
-    "Data Source":"Canonical Reference",
-    "Diagnosis":"Moderate negative transfer detected (TG = -4.44%). Significant representation conflict."
+    "Accuracy (%)":97.12,
+    "Transfer Gain (%)":0.69,
+    "Negative Transfer?":"\u2705 NO (Positive Transfer)",
+    "Data Source":"Live GPU",
+    "Diagnosis":"Transfer learning provided a positive gain of +0.69% over random initialization."
   },
   {
     "Dataset":"SVHN (Digits - Severe Mismatch)",
     "Method":"Linear Probing (Frozen Backbone)",
-    "Accuracy (%)":72.35,
-    "Transfer Gain (%)":-16.27,
+    "Accuracy (%)":65.53,
+    "Transfer Gain (%)":-30.9,
     "Negative Transfer?":"\u26a0\ufe0f YES (Negative Transfer)",
-    "Data Source":"Canonical Reference",
-    "Diagnosis":"Severe negative transfer detected (TG = -16.27%). Catastrophic domain mismatch."
+    "Data Source":"Live GPU",
+    "Diagnosis":"Severe negative transfer detected (TG = -30.90%). Catastrophic domain mismatch."
   },
   {
     "Dataset":"SVHN (Digits - Severe Mismatch)",
     "Method":"TransferGuard (Adaptive Routing - Ours)",
-    "Accuracy (%)":90.45,
-    "Transfer Gain (%)":1.83,
+    "Accuracy (%)":96.62,
+    "Transfer Gain (%)":0.19,
     "Negative Transfer?":"\u2705 NO (Positive Transfer)",
-    "Data Source":"Canonical Reference",
-    "Diagnosis":"Transfer learning provided a positive gain of +1.83% over random initialization."
+    "Data Source":"Live GPU",
+    "Diagnosis":"Transfer learning provided a positive gain of +0.19% over random initialization."
   },
   {
     "Dataset":"CIFAR-100 (Natural Objects - Moderate)",

@@ -134,6 +134,33 @@ def main():
     for stage, details in summary.items():
         print(f"   Stage [{stage:12s}]: Score = {details['score']:.4f} -> Action: {details['action'].upper()}")
 
+    # Save structured routing profile JSON for downstream plotting and evaluation
+    routing_data = {
+        "dataset": cfg.data.dataset,
+        "backbone": cfg.model.backbone,
+        "freeze_threshold": cfg.transferguard.freeze_threshold,
+        "bypass_threshold": cfg.transferguard.bypass_threshold,
+        "running_scores": {k: float(v) for k, v in model.running_scores.items()},
+        "routing_actions": {k: v["action"] for k, v in summary.items()},
+        "history_scores": model.history_scores,
+    }
+    routing_json_path = os.path.join(output_dir, "routing_profile.json")
+    with open(routing_json_path, "w") as f:
+        json.dump(routing_data, f, indent=2)
+    print(f"📄 Saved routing decisions data to: {routing_json_path}")
+
+    # Save summary eval JSON
+    eval_summary = {
+        "method": "transferguard",
+        "dataset": cfg.data.dataset,
+        "backbone": cfg.model.backbone,
+        "epochs": cfg.training.epochs,
+        "best_val_acc1": results.get("best_val_acc1", 0.0),
+        "total_time": results.get("total_time", 0.0),
+    }
+    with open(os.path.join(output_dir, "eval_summary.json"), "w") as f:
+        json.dump(eval_summary, f, indent=2)
+
     # Save layer routing profile figure
     profile_path = os.path.join(output_dir, "transferguard_layer_profile.png")
     plot_layer_freezing_profile(

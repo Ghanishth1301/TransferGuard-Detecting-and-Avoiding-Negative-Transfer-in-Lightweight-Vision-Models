@@ -105,6 +105,19 @@ def main():
         val_loader=val_loader,
         epochs=cfg.training.epochs,
     )
+
+    # Save summary eval JSON
+    eval_summary = {
+        "method": "scratch",
+        "dataset": cfg.data.dataset,
+        "backbone": cfg.model.backbone,
+        "epochs": cfg.training.epochs,
+        "best_val_acc1": results.get("best_val_acc1", 0.0),
+        "total_time": results.get("total_time", 0.0),
+    }
+    with open(os.path.join(output_dir, "eval_summary.json"), "w") as f:
+        json.dump(eval_summary, f, indent=2)
+
     print(f"\n✅ Scratch baseline complete. Best Val Accuracy: {results['best_val_acc1']:.2f}%")
 
 
