@@ -34,7 +34,9 @@ In lightweight backbones, deep feature representations learned on natural object
 ### 2.1 Transfer Gain ($TG$)
 The fundamental metric for detecting negative transfer is **Transfer Gain ($TG$)**:
 
-$$TG = \text{Accuracy}_{\text{Transfer}} - \text{Accuracy}_{\text{Scratch}}$$
+$$
+TG = \text{Accuracy}_{\text{Transfer}} - \text{Accuracy}_{\text{Scratch}}
+$$
 
 Where:
 - $\text{Accuracy}_{\text{Transfer}}$: Top-1 test accuracy achieved by fine-tuning the ImageNet pre-trained backbone on the target dataset.
@@ -54,28 +56,40 @@ Let $X \in \mathbb{R}^{m \times p}$ and $Y \in \mathbb{R}^{m \times q}$ be cente
 
 The Gram matrices are $K = X X^T$ and $L = Y Y^T$. The Hilbert-Schmidt Independence Criterion (HSIC) is defined as:
 
-$$\text{HSIC}(K, L) = \frac{1}{(m-1)^2} \text{tr}(K H L H)$$
+$$
+\text{HSIC}(K, L) = \frac{1}{(m-1)^2} \text{tr}(K H L H)
+$$
 
 Where $H = I_m - \frac{1}{m} \mathbf{1}\mathbf{1}^T$ is the centering matrix. Linear CKA is then formulated as:
 
-$$\text{CKA}(K, L) = \frac{\text{HSIC}(K, L)}{\sqrt{\text{HSIC}(K, K) \cdot \text{HSIC}(L, L)}} \in [0, 1]$$
+$$
+\text{CKA}(K, L) = \frac{\text{HSIC}(K, L)}{\sqrt{\text{HSIC}(K, K) \cdot \text{HSIC}(L, L)}} \in [0, 1]
+$$
 
 **Diagnostic Utility:**
 - A high CKA in shallow layers (layers 1-3) confirms low-level features (edges, textures) are transferable.
 - A steep drop in CKA in deep layers (layers 8-15) signals severe representational incompatibility (the root cause of negative transfer).
 
 ### 2.3 TransferGuard Gating Score ($S_l$)
-For each building block or stage $l \in \{1, 2, \dots, L\}$, TransferGuard computes a transferability index $S_l \in [0, 1]$:
+For each architectural stage $l \in \{1, 2, \dots, L\}$, TransferGuard computes a scalar transferability index $S_l \in [0, 1]$ from the spatially average-pooled feature representation $z_l \in \mathbb{R}^{C_l}$:
 
-$$S_l = \sigma \left( \mathbf{w}_l^T \phi(z_l) + b_l \right)$$
+$$
+S_l = \text{Sigmoid}\left( \mathbf{W}_2 \cdot \text{ReLU}\left( \text{LayerNorm}(\mathbf{W}_1 z_l + \mathbf{b}_1) \right) + b_2 \right)
+$$
 
-Where $\phi(z_l)$ is a lightweight projection (global average pooling + layer normalization) of target features $z_l$, or derived from layer-wise CKA alignment with canonical source anchor statistics.
+Where $\mathbf{W}_1 \in \mathbb{R}^{\frac{C_l}{r} \times C_l}$ is a bottleneck projection with reduction ratio $r = 8$.
+
+To drive micro-gates toward decisive actions rather than drifting around neutral values ($0.5$), the gating network is regularized by minimizing binary entropy:
+
+$$
+\mathcal{H}(p) = - \left[ p \log(p) + (1 - p) \log(1 - p) \right]
+$$
 
 ### 2.4 Adaptive Routing Decision
-Based on $S_l$ and an adaptive threshold $\tau_l$:
-- **Case 1 ($S_l \ge \tau_{\text{high}}$): Frozen Transfer.** Layer features are highly compatible. Freeze weights ($\nabla_{\theta_l} = 0$) to preserve generic representations and save compute.
-- **Case 2 ($\tau_{\text{low}} \le S_l < \tau_{\text{high}}$): Plastic Fine-Tuning.** Layer is moderately compatible. Train with regularized learning rate $\eta_l = \eta \cdot S_l$.
-- **Case 3 ($S_l < \tau_{\text{low}}$): Harmful Transfer Bypass.** Layer induces severe negative transfer. The routing mechanism bypasses pre-trained weights via an identity/projection residual shortcut, or resets layer weights to random initialization, shielding downstream representations from harmful source interference.
+Based on the running Exponential Moving Average (EMA) of $S_l$ and thresholds $\tau_{\text{freeze}}$ and $\tau_{\text{bypass}}$:
+- **Case 1 ($S_l \ge \tau_{\text{freeze}}$, default $0.70$): Frozen Transfer.** Stage features are highly compatible. Freeze weights ($\nabla_{\theta_l} = 0$) to preserve generic representations, eliminate gradient backpropagation overhead, and accelerate convergence.
+- **Case 2 ($\tau_{\text{bypass}} < S_l < \tau_{\text{freeze}}$): Plastic Fine-Tuning.** Stage features are moderately compatible. Update parameters using standard backpropagation.
+- **Case 3 ($S_l \le \tau_{\text{bypass}}$, default $0.35$): Harmful Transfer Bypass.** Stage induces severe negative transfer. The routing mechanism bypasses/adapts the mismatched pre-trained weights, shielding downstream representations from harmful source interference.
 
 ---
 

@@ -34,15 +34,30 @@ To thoroughly evaluate the TransferGuard mechanism against negative transfer, th
 ## 2. Evaluation Protocol & Metrics
 
 ### 2.1 Quantitative Metrics
-1. **Top-1 & Top-5 Test Accuracy (%):**
-   $$\text{Acc}_1 = \frac{1}{N_{\text{test}}} \sum_{i=1}^{N_{\text{test}}} \mathbb{I}(\hat{y}_i = y_i)$$
-2. **Transfer Gain ($TG$):**
-   $$TG = \text{Acc}_{\text{Method}} - \text{Acc}_{\text{Scratch}}$$
-   A negative value ($TG < 0$) signifies Negative Transfer. The goal of TransferGuard is to ensure $TG \ge 0$ across all regimes.
-3. **Layer-wise CKA Alignment ($CKA_l$):**
-   Pairwise similarity of layer $l$ representations between ImageNet pre-trained weights and target domain representations.
-4. **Parameter Update Efficiency:**
-   Percentage of backbone parameters frozen vs fine-tuned, and resulting speedup in backward pass.
+
+#### 1. Top-1 & Top-5 Test Accuracy (%)
+Standard classification accuracy evaluated over the target evaluation split:
+
+$$
+\text{Acc}_1 = \frac{1}{N_{\text{test}}} \sum_{i=1}^{N_{\text{test}}} \mathbb{I}(\hat{y}_i = y_i)
+$$
+
+#### 2. Transfer Gain ($TG$)
+The primary diagnostic metric evaluating transfer learning efficacy relative to training from scratch with random Gaussian/He initialization:
+
+$$
+TG = \text{Acc}_{\text{Method}} - \text{Acc}_{\text{Scratch}}
+$$
+
+- **Positive Transfer ($TG > 0$):** Pre-trained source representations improve accuracy and convergence speed on the target domain.
+- **Neutral Transfer ($TG \approx 0$):** Source pre-training neither assists nor degrades target performance.
+- **Negative Transfer ($TG < 0$):** Source priors actively degrade downstream performance. TransferGuard dynamically avoids negative transfer to ensure $TG \ge 0$ across all regimes.
+
+#### 3. Layer-Wise CKA Alignment ($CKA_l$)
+Pairwise functional similarity between ImageNet pre-trained representations and target representations computed at stage boundary $l \in \{1, \dots, 5\}$.
+
+#### 4. Parameter Update Efficiency
+The percentage of backbone parameters frozen vs. actively fine-tuned, measuring computational and gradient memory savings during backpropagation.
 
 ---
 
@@ -61,15 +76,15 @@ To thoroughly evaluate the TransferGuard mechanism against negative transfer, th
 - Generate and save CKA heatmaps (`results/figures/cka_heatmap_*.png`).
 - Validate the hypothesis: **SVHN exhibits low CKA scores in deep layers, predicting negative transfer.**
 
-### Phase 3: Baseline Training (Google Colab GPU / Cloud)
+### Phase 3: Baseline Training (GPU / Cloud)
 - Train MobileNetV3-Small and ShuffleNetV2 from scratch on SVHN, CIFAR-100, and Flowers-102.
 - Fine-tune pre-trained ImageNet backbones on the same datasets.
-- Train linear probing baselines.
+- Train linear probing baselines across all datasets to empirically demonstrate negative transfer regimes.
 - Record validation curves, final test accuracies, and calculate Transfer Gain ($TG$).
 
 ### Phase 4: TransferGuard Implementation & Adaptive Freezing
-- Train with TransferGuard dynamic layer gating on SVHN and CIFAR-100.
-- Verify that TransferGuard identifies harmful deep layers in SVHN and automatically locks/bypasses them.
+- Train with TransferGuard dynamic layer gating across SVHN (MobileNetV3), SVHN (ShuffleNetV2), CIFAR-100, and Flowers-102.
+- Verify that TransferGuard identifies mismatched deep layers in SVHN and automatically locks/bypasses them.
 - Compare final accuracy against standard fine-tuning and scratch.
 
 ### Phase 5: Ablation Studies & Publication Assets

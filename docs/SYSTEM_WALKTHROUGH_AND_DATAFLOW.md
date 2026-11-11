@@ -87,12 +87,20 @@ def forward_with_features(self, x: torch.Tensor) -> Tuple[torch.Tensor, Dict[str
 
 ### 3.2 Micro-Gating Network (`src/models/transferguard_gate.py`)
 Each stage possesses a separate micro-gate parameterized by an MLP with a reduction ratio (default: $8$). To ensure the gates make decisive binary choices rather than drifting around neutral values ($0.5$), an entropy minimization penalty is applied:
-$$\mathcal{H}(p) = - [p \log(p) + (1 - p) \log(1 - p)]$$
+
+$$
+\mathcal{H}(p) = - [p \log(p) + (1 - p) \log(1 - p)]
+$$
+
 Minimizing this entropy pushes the output toward $1.0$ (safe to freeze) or $0.0$ (harmful, bypass/tune).
 
 ### 3.3 Representation Alignment via Linear CKA (`src/metrics/cka.py`)
 Centered Kernel Alignment (Kornblith et al., ICML 2019) evaluates functional similarity between activation matrices $X \in \mathbb{R}^{n \times d_1}$ and $Y \in \mathbb{R}^{n \times d_2}$:
-$$\text{CKA}(K, L) = \frac{\text{HSIC}(K, L)}{\sqrt{\text{HSIC}(K, K) \cdot \text{HSIC}(L, L)}}$$
+
+$$
+\text{CKA}(K, L) = \frac{\text{HSIC}(K, L)}{\sqrt{\text{HSIC}(K, K) \cdot \text{HSIC}(L, L)}}
+$$
+
 where $K = XX^T$ and $L = YY^T$ are Gram matrices centered using $H = I - \frac{1}{n}\mathbf{1}\mathbf{1}^T$. CKA is invariant to orthogonal rotations and isotropic scaling, providing an accurate mathematical indicator of layer-wise domain divergence.
 
 ---
@@ -107,7 +115,7 @@ where $K = XX^T$ and $L = YY^T$ are Gram matrices centered using $H = I - \frac{
 | **Gating Controller** | `LayerGatingController` | `src/models/transferguard_gate.py` | Coordinates all stage gates; computes bimodal entropy loss. |
 | **Adaptive Router** | `AdaptiveRoutingModel` | `src/models/adaptive_routing.py` | EMA score tracking; updates backbone `requires_grad` flags. |
 | **CKA Metric Engine** | `linear_cka` | `src/metrics/cka.py` | Unbiased HSIC Gram matrix centering and representation similarity. |
-| **Transfer Gain Metric** | `compute_transfer_gain` | `src/metrics/transfer_gain.py` | $TG = Acc_{\text{transfer}} - Acc_{\text{scratch}}$ calculation and diagnostics. |
+| **Transfer Gain Metric** | `compute_transfer_gain` | `src/metrics/transfer_gain.py` | $TG = \text{Acc}_{\text{transfer}} - \text{Acc}_{\text{scratch}}$ calculation and diagnostics. |
 | **Unified Trainer** | `Trainer` | `src/training/trainer.py` | AMP training loop, cosine annealing, validation, auto-resume. |
 | **Composite Loss** | `TransferGuardLoss` | `src/training/loss.py` | Task Cross-Entropy + Gate Entropy Regularization. |
 | **Data Pipelines** | `get_dataloader` | `src/data/dataset_loader.py` | SVHN, CIFAR-100, and Flowers-102 dataset loading. |
