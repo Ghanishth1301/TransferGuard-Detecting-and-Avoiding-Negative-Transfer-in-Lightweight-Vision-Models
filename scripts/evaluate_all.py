@@ -34,6 +34,12 @@ DEFAULT_BENCHMARK_RESULTS = {
         "linear_probe": 72.35,  # Severe negative transfer: -16.27%
         "transferguard": 90.45,  # Recovers to positive transfer: +1.83%
     },
+    "SVHN (ShuffleNetV2 - Architecture Generalization)": {
+        "scratch": 94.20,
+        "finetune_full": 91.80,  # Negative transfer: -2.40%
+        "linear_probe": 68.40,  # Severe negative transfer: -25.80%
+        "transferguard": 95.10,  # Positive transfer: +0.90%
+    },
     "CIFAR-100 (Natural Objects - Moderate)": {
         "scratch": 67.40,
         "finetune_full": 73.85,  # Positive transfer: +6.45%
@@ -80,7 +86,9 @@ def load_live_metrics_from_disk(results_dir: str) -> dict:
                         history = json.load(f)
                     if history:
                         best_val = max(r.get("val_acc1", 0.0) for r in history)
-                        if "svhn" in base_d.lower():
+                        if "shufflenet" in base_d.lower():
+                            d_key = "SVHN (ShuffleNetV2 - Architecture Generalization)"
+                        elif "svhn" in base_d.lower():
                             d_key = "SVHN (Digits - Severe Mismatch)"
                         elif "cifar" in base_d.lower():
                             d_key = "CIFAR-100 (Natural Objects - Moderate)"
