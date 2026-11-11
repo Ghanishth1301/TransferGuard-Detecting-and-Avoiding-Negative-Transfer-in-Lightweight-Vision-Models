@@ -1,0 +1,9 @@
+{
+  "method": "finetune_full",
+  "dataset": "flowers102",
+  "backbone": "mobilenet_v3_small",
+  "mode": "full",
+  "epochs": 30,
+  "best_val_acc1": 81.39497422680412,
+  "total_time": 151.59635710716248
+}

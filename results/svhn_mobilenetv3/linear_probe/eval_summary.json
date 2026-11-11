@@ -1,0 +1,9 @@
+{
+  "method": "linear_probe",
+  "dataset": "svhn",
+  "backbone": "mobilenet_v3_small",
+  "epochs": 30,
+  "best_val_acc1": 65.53,
+  "final_val_acc1": 65.53,
+  "final_val_loss": 1.1808
+}

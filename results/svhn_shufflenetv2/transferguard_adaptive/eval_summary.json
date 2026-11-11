@@ -1,0 +1,8 @@
+{
+  "method": "transferguard",
+  "dataset": "svhn",
+  "backbone": "shufflenet_v2_x1_0",
+  "epochs": 30,
+  "best_val_acc1": 97.03201593137256,
+  "total_time": 1091.6506311893463
+}

@@ -1,0 +1,8 @@
+{
+  "method": "transferguard",
+  "dataset": "cifar100",
+  "backbone": "mobilenet_v3_small",
+  "epochs": 30,
+  "best_val_acc1": 79.5193829113924,
+  "total_time": 405.02486538887024
+}

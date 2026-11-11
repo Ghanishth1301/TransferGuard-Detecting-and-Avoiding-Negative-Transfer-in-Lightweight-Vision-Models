@@ -1,0 +1,8 @@
+{
+  "method": "scratch",
+  "dataset": "flowers102",
+  "backbone": "mobilenet_v3_small",
+  "epochs": 30,
+  "best_val_acc1": 1.4336340206185567,
+  "total_time": 0.0
+}

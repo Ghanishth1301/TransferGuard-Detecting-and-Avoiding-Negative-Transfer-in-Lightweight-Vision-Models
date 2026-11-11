@@ -1,0 +1,8 @@
+{
+  "method": "scratch",
+  "dataset": "cifar100",
+  "backbone": "mobilenet_v3_small",
+  "epochs": 30,
+  "best_val_acc1": 63.17246835443038,
+  "total_time": 0.0
+}

@@ -1,0 +1,9 @@
+{
+  "method": "scratch",
+  "dataset": "svhn",
+  "backbone": "mobilenet_v3_small",
+  "epochs": 30,
+  "best_val_acc1": 96.43,
+  "final_val_acc1": 96.43,
+  "final_val_loss": 0.4021
+}

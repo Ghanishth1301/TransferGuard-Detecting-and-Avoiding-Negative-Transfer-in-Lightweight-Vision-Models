@@ -1,0 +1,9 @@
+{
+  "method": "linear_probe",
+  "dataset": "svhn",
+  "backbone": "shufflenet_v2_x1_0",
+  "mode": "linear_probe",
+  "epochs": 30,
+  "best_val_acc1": 46.00694443197811,
+  "total_time": 881.3066883087158
+}

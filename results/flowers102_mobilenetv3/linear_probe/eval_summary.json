@@ -1,0 +1,9 @@
+{
+  "method": "linear_probe",
+  "dataset": "flowers102",
+  "backbone": "mobilenet_v3_small",
+  "mode": "linear_probe",
+  "epochs": 30,
+  "best_val_acc1": 74.80670103092784,
+  "total_time": 132.5461196899414
+}

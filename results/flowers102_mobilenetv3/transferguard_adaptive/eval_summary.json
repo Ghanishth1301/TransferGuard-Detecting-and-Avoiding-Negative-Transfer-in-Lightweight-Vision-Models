@@ -1,0 +1,8 @@
+{
+  "method": "transferguard",
+  "dataset": "flowers102",
+  "backbone": "mobilenet_v3_small",
+  "epochs": 30,
+  "best_val_acc1": 80.21907216494846,
+  "total_time": 149.54714846611023
+}

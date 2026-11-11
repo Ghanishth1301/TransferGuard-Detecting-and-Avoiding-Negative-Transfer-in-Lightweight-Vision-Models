@@ -1,0 +1,9 @@
+{
+  "method": "finetune_full",
+  "dataset": "svhn",
+  "backbone": "shufflenet_v2_x1_0",
+  "mode": "full",
+  "epochs": 30,
+  "best_val_acc1": 96.96052899080165,
+  "total_time": 1451.2616200447083
+}

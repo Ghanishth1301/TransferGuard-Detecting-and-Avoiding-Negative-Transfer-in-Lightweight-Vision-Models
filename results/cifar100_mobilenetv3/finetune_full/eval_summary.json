@@ -1,0 +1,9 @@
+{
+  "method": "finetune_full",
+  "dataset": "cifar100",
+  "backbone": "mobilenet_v3_small",
+  "mode": "full",
+  "epochs": 30,
+  "best_val_acc1": 81.8631329113924,
+  "total_time": 0.0
+}

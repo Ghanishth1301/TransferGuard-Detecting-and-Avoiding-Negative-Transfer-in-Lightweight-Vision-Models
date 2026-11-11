@@ -1,0 +1,9 @@
+{
+  "method": "linear_probe",
+  "dataset": "cifar100",
+  "backbone": "mobilenet_v3_small",
+  "mode": "linear_probe",
+  "epochs": 30,
+  "best_val_acc1": 70.17405063291139,
+  "total_time": 0.0
+}

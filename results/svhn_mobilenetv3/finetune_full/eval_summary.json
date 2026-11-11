@@ -1,0 +1,9 @@
+{
+  "method": "finetune_full",
+  "dataset": "svhn",
+  "backbone": "mobilenet_v3_small",
+  "epochs": 30,
+  "best_val_acc1": 97.12,
+  "final_val_acc1": 97.11,
+  "final_val_loss": 0.3817
+}

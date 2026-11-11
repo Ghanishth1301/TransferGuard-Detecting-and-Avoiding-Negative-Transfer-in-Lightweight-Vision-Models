@@ -1,0 +1,8 @@
+{
+  "method": "scratch",
+  "dataset": "svhn",
+  "backbone": "shufflenet_v2_x1_0",
+  "epochs": 30,
+  "best_val_acc1": 96.01460374570361,
+  "total_time": 1446.529837846756
+}

@@ -1,0 +1,8 @@
+{
+  "method": "transferguard",
+  "dataset": "svhn",
+  "backbone": "mobilenet_v3_small",
+  "epochs": 30,
+  "best_val_acc1": 97.13669320648792,
+  "total_time": 0.0
+}
