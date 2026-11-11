@@ -14,18 +14,18 @@ model:
 data:
   dataset: "flowers102"
   data_dir: "./data"
-  batch_size: 32
-  num_workers: 2
+  batch_size: 64
+  num_workers: 4
   image_size: 224
   debug_subset: null
 
 training:
-  epochs: 40
+  epochs: 30
   lr: 0.0003
   weight_decay: 0.0005
   optimizer: "adamw"
   scheduler: "cosine"
-  mixed_precision: false
+  mixed_precision: true
 
 transferguard:
   enabled: true
