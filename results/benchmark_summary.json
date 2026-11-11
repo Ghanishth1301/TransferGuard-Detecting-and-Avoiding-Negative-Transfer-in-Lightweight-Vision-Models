@@ -29,11 +29,11 @@
   {
     "Dataset":"SVHN (Digits - Severe Mismatch)",
     "Method":"TransferGuard (Adaptive Routing - Ours)",
-    "Accuracy (%)":96.62,
-    "Transfer Gain (%)":0.19,
+    "Accuracy (%)":97.14,
+    "Transfer Gain (%)":0.71,
     "Negative Transfer?":"\u2705 NO (Positive Transfer)",
     "Data Source":"Live GPU",
-    "Diagnosis":"Transfer learning provided a positive gain of +0.19% over random initialization."
+    "Diagnosis":"Transfer learning provided a positive gain of +0.71% over random initialization."
   },
   {
     "Dataset":"CIFAR-100 (Natural Objects - Moderate)",
